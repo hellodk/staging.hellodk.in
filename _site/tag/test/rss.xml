@@ -1,16 +1,24 @@
----
-layout: post
-cover: 'assets/images/cover3.jpg'
-title: A Full and Comprehensive Style Test 
-date:   2014-09-27 10:18:00
-tags: test content
-subclass: 'post tag-test tag-content'
-categories: 'casper'
-navigation: True
-logo: 'assets/images/ghost.png'
----
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<p>This is just an <em>ipsis verbis</em> copy of the first example running on the <a href="http://demo.ghost.io">Ghost Demo</a>. This shows how you can use html styling to achieve your hopes.</p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>biomadeira.github.io/jasper/</title>
+   
+   <link>http://biomadeira.github.io/jasper/</link>
+   <description>A beautiful narrative written with the world's most elegant publishing platform. The story begins here.</description>
+   <language>en-uk</language>
+   <managingEditor> Casper McFadden</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>A Full and Comprehensive Style Test</title>
+	  <link>/jasper//a-full-and-comprehensive-style-test</link>
+	  <author>Casper McFadden</author>
+	  <pubDate>2014-09-27T11:18:00+01:00</pubDate>
+	  <guid>/jasper//a-full-and-comprehensive-style-test</guid>
+	  <description><![CDATA[
+	     <p>This is just an <em>ipsis verbis</em> copy of the first example running on the <a href="http://demo.ghost.io">Ghost Demo</a>. This shows how you can use html styling to achieve your hopes.</p>
 
 
 <p>Below is just about everything you’ll need to style in the theme. Check the source code to see the many embedded elements within paragraphs.</p>
@@ -128,13 +136,11 @@ logo: 'assets/images/ghost.png'
 
 <p>Code can be presented inline, like <code>&lt;?php bloginfo('stylesheet_url'); ?&gt;</code>, or within a <code>&lt;pre&gt;</code> block. Because we have more specific typographic needs for code, we’ll specify Consolas and Monaco ahead of the browser-defined monospace font.</p>
 
-{% highlight css %}
-#container {
-    float: left;
-    margin: 0 -240px 0 0;
-    width: 100%;
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nf">#container</span> <span class="p">{</span>
+    <span class="k">float</span><span class="o">:</span> <span class="k">left</span><span class="p">;</span>
+    <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">-240px</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span>
+    <span class="k">width</span><span class="o">:</span> <span class="m">100%</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 <hr />
 
@@ -367,3 +373,9 @@ c.draw = function() {
 <p></div><script async src="//codepen.io/assets/embed/ei.js"></script></p>
 
 <p>Isn't it beautiful.</p>
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

@@ -1,11 +1,14 @@
 ---
 layout: post
 cover: false
-title: Gettysburg Address
-date:   1863-11-19 10:18:00
-tags: fiction
-subclass: 'post tag-fiction'
+title: Creating a Highly Available Distributed Messaging System
+date:   2015-12-19 10:18:00
+tags: tutorials
+subclass: 'post tag-tutorials'
 categories: 'casper'
+navigation: True
+logo: 'assets/images/ghost.png'
+cover: 'assets/images/Minion-in-Despicable-Me-2-Wallpaper-HD-1080p.jpg'
 ---
 
 Creating a Highly Available Distributed Messaging Queue Cluster with RabbitMQ-3.5.6
