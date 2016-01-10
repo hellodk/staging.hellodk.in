@@ -1,11 +1,14 @@
 ---
 layout: post
 cover: false
-title: Gettysburg Address
-date:   1863-11-19 10:18:00
-tags: fiction
-subclass: 'post tag-fiction'
-categories: 'casper'
+title: Creating a Highly Available Distributed Messaging System
+date:   2015-12-19 10:18:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+logo: 'assets/images/ghost.png'
+cover: 'assets/images/Minion-in-Despicable-Me-2-Wallpaper-HD-1080p.jpg'
 ---
 
 Creating a Highly Available Distributed Messaging Queue Cluster with RabbitMQ-3.5.6
@@ -36,11 +39,13 @@ In the /etc/hosts file of your system, append the hostname corresponding to the 
 a.b.c.d with hostname as rabbitmq1
 e.f.g.h with hostname as rabbitmq2
 i.j.k.l with hostname as rabbitmq3
+
 then in the /etc/hosts on all the 3 machines, add the below lines:
 
 a.b.c.d rabbitmq1
 e.f.g.h rabbitmq2
 i.j.k.l rabbitmq3
+
 and that should suffice to solve your issues with host entries. Rabbitmq is very sensitive towards hostnames, hence this step is of quiet importance. Once done, do verify if the nodes are ping-able from every node.
 
 For installing rabbitmq-server, use the below commands:
