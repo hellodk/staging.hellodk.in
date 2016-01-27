@@ -6,12 +6,12 @@ language: 'en-uk'
 
 # Website info
 name: 'Curosity is the most powerful thing you own'
-description: "A beautiful narrative written over an elegant publishing platform. The story begins here."
+description: "A beautiful narrative written an elegant publishing platform. The story begins here."
 
 # Author's info
 author: 'Deepak Kumar Gupta'
 # edit 'categories' in the front matter of every post to match this username
-nickname: dk
+nickname: casper
 bio: 'A full time technologist cum foodie. He spends most of the time playing with open source tools and prefers hanging out with friends. Deepak has been a taveller since ages, besides being a hardcore biker and loves doing photogrpahy as hobby.'
 location: 'Bangalore, INDIA'
 url: 'http://hellodk.github.io/'
@@ -19,7 +19,7 @@ image: 'assets/images/casper.png'
 
 short_url: 'hellodk.github.io/'
 #google_analytics: UA-69281367-1
-disqus: hellodk
+disqus: username
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
 baseurl: /
 
@@ -58,7 +58,7 @@ username: hellodk
 repo: hellodk.github.io
 branch: master
 relative_source: ../jasper/
-destination: ../hellodk01.github.io/
+destination: ../jasper-pages/
 production_url:  https://hellodk.github.io/
 source_url:      https://github.com/hellodk/
 
