@@ -19,6 +19,21 @@ Source : https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 ##### H5
 ###### H6
 
+Will become a heading
+==============
+
+Will become a sub heading
+--------------
+
+*This will be Italic*
+
+**This will be Bold**
+
+- This will be a list item
+- This will be a list item
+
+    Add a indent and this will end up as code
+
 Alternatively, for H1 and H2, an underline-ish style:
 
 Alt-H1
