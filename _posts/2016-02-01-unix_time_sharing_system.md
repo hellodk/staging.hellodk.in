@@ -15,7 +15,7 @@ cover: 'assets/images/cover1.jpg'
 
                             D. M. Ritchie
 
-#Introduction
+Introduction
 UNIX is a general-purpose, multi-user time sharing system implemented on several Digital Equipment Corporation PDP series machines.
 
 UNIX was written by K. L. Thompson, who also wrote many of the command programs. The author of this memorandum contributed several of the major commands, including the assembler and the debugger. The file system was originally designed by Thompson, the author, and R. H. Canaday.
