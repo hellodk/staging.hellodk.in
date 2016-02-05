@@ -58,7 +58,7 @@ username: hellodk
 repo: hellodk.github.io
 branch: master
 relative_source: ../jasper/
-destination: ../jasper-pages/
+destination: ../hellodk.github.io/
 production_url:  https://hellodk.github.io/
 source_url:      https://github.com/hellodk/
 
