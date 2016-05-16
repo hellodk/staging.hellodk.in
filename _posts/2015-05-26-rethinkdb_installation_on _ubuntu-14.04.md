@@ -1,7 +1,7 @@
 ---
 layout: post
 cover: false
-title: RethinkDb installation on Ubuntu-14.04
+title: Rethinkdb Installation on Ubuntu-14.04
 date:  2016-01-28 10:18:00
 tags: tutorials
 subclass: 'post tag-tutorials'
@@ -10,10 +10,11 @@ navigation: True
 logo: 'assets/images/ghost.png'
 cover: 'assets/images/cover4.jpg'
 ---
+Hey guys, hope you all are doing well. In this blog we are gonna see how do we setup rethinkdb server on an ubuntu box.
 
-Let's get some hands on rethinkdb today and find it out yourself.
+Before we get into the process of making our hands dirty, let's  first understand why rethinkdb? 
 
-So what is rethinkdb? Well, to say...rethinkdb is an open-source, scalable JSON database built from the ground up for the realtime web. RethinkDB inverts the traditional database architecture by exposing an exciting new access model – instead of polling for changes, the developer can tell RethinkDB to continuously push updated query results to applications in realtime. RethinkDB’s realtime push architecture dramatically reduces the time and effort necessary to build scalable realtime apps. RethinkDB also offers a flexible query language, intuitive operations and monitoring APIs, and is easy to setup and learn. Just like any other database solution, rethinkdb ships as a client-server component model. The installation process for both the server and the client are illustrated below:
+Well, to say...rethinkdb is an open-source, scalable JSON database built from the ground up for the realtime web. RethinkDB inverts the traditional database architecture by exposing an exciting new access model – instead of polling for changes, the developer can tell RethinkDB to continuously push updated query results to applications in realtime. RethinkDB’s realtime push architecture dramatically reduces the time and effort necessary to build scalable realtime apps. RethinkDB also offers a flexible query language, intuitive operations and monitoring APIs, and is easy to setup and learn. Just like any other database solution, rethinkdb ships as a client-server component model. The installation process for both the server and the client are illustrated below:
 
 How to Install RethinkDb:
 1. Add the RethinkDB PPA to your list of repositories : source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
