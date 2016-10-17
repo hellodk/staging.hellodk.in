@@ -3,13 +3,13 @@ markdown: redcarpet
 highlighter: pygments
 paginate: 5
 language: 'en-uk'
-
+# bundle exec jekyll serve --watch
 # Website info
 name: 'Curosity is the most powerful thing you own'
-description: "A beautiful narrative written an elegant publishing platform. The story begins here."
+description: "A beautiful narrative written over an elegant publishing platform. The story begins here..."
 
 # Author's info
-author: 'Deepak Kumar Gupta'
+author: 'Deepak Gupta'
 # edit 'categories' in the front matter of every post to match this username
 nickname: casper
 bio: 'A full time technologist cum foodie. He spends most of the time playing with open source tools and prefers hanging out with friends. Deepak has been a taveller since ages, besides being a hardcore biker and loves doing photogrpahy as hobby.'

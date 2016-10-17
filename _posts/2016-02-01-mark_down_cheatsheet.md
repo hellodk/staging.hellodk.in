@@ -7,17 +7,18 @@ tags: tutorials
 subclass: 'post tag-fiction'
 categories: 'dk'
 navigation: True
-logo: 'assets/images/ghost.png'
+#logo: 'assets/images/ghost.png'
 cover: 'assets/images/cover1.jpg'
 ---
 Source : https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 
-# H1
-## H2
-### H3
-#### H4
-##### H5
-###### H6
+# H1 - # H1
+## H2 - ## H2
+### H3 - ### H3
+#### H4 - #### H4
+##### H5 - ##### H5
+###### H6 -  ######H6
+
 
 Will become a heading
 ==============

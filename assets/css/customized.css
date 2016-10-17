@@ -14,3 +14,8 @@ body {
 	background: "assets/images/404_error_minion.jpg"
 	background-color: #cccccc;
 }
+
+html
+{
+	font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%
+}
