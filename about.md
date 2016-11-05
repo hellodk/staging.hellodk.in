@@ -1,14 +1,16 @@
 ---
-layout: page
+layout: post
 title: About
 class: 'post'
-navigation: True
-logo: 'assets/images/ghost.png'
+#logo: 'assets/images/ghost.png'
 current: about
+cover: 'assets/images/Minion-in-Despicable-Me-2-Wallpaper-HD-1080p.jpg'
+date:   2015-12-28 10:18:00
+tags: about
+subclass: 'post tag-tutorials'
+categories: 'casper'
+navigation: True
 ---
 
-This is a demo blog for Ghost, it contains dummy content which allows you to click around and see what a Ghost blog running the default theme looks like.
-
-We use this for testing and for reference!
-
-If you'd like to set up your own blog, head on over to [https://ghost.org](https://ghost.org) and sign up.
+Too often we under-estimate the power of a touch, a smile, a kind word, a listening ear, an honest compliment, or the smallest act of caring, all of which have the potential to turn a life around. 
+The idea behind writing this blog/website is to conect to people and share my experiences with them.
