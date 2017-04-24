@@ -14,10 +14,10 @@ author: 'Deepak Kumar Gupta'
 nickname: dk
 bio: 'A full time technologist cum foodie. He spends most of the time playing with open source tools and prefers hanging out with friends. Deepak has been a taveller since ages, besides being a hardcore biker and loves doing photogrpahy as hobby.'
 location: 'Bangalore, INDIA'
-url: 'http://hellodk.github.io/'
+url: 'http://hellodk.in'
 image: 'assets/images/casper.png'
 
-short_url: 'hellodk.github.io/'
+short_url: 'http://hellodk.in'
 #google_analytics: UA-69281367-1
 disqus: hellodk
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
