@@ -1,0 +1,27 @@
+---
+layout: post
+cover: false
+title: MySQL multi master replication fundas
+date:  2016-09-21 10:18:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/ghost.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+<html>
+<p>
+Master-master replication (more generally -- multi-master replication) conceptually works by assuming that conflicts are not common and only keeping the entire system loosely consistent, asynchonously communication updates between masters, which ends up violating basic ACID properties.
+
+As carmbrester correctly suggested (and independent of MySQL), key generation is an important mitigation strategy against conflicts (e.g., same ID being generated). Beyond that, I think the key is to think of conflicts in multi-master systems as akin to conflicts in optimistic locking models. Both succeed because the remaining risks are generally small compared to the payoffs.
+
+However, conflicts can happen (as you suggest) and different vendors provide different strategies. For example Oracle allows DBAs to choose from a range of conflict resolution basis-es (timestamp, affinity, etc) and subsqeuent actions (logging an error in a queue, etc). See more details on Oracle at http://www.orafaq.com/wiki/Advanced_Replication_FAQ#What_happens_if_two_or_more_sites_change_the_same_data.3F
+</p>
+
+<p>Context is important, but here is a little bit of information on how MySql handles the scenario...
+
+The binlog from each master is read and executed on the other master. Auto-increment offset is configured so that primary keys do not collide, i.e. one of the masters would be configured with an offset that results in even numbers are used during auto-increment, while the other master would be configured to use odd numbers during auto-increment.
+
+For MySql Clustering replication, which can also be configured with dual masters, you can configure how conflicts are handled as outlined in this link.</p>
+</html>
