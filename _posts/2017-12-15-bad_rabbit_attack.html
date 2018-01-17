@@ -1,0 +1,39 @@
+---
+layout: post
+cover: false
+title: Bad Rabbit: New Ransomware Attack 
+date:  2017-12-15 13:40:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/ghost.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+<html>
+Threat Summary : Bad Rabbit: New Ransomware Attack Rapidly Spreading
+ 
+A new widespread ransomware attack is spreading like wildfire around Europe and has already affected over 200 major organisations, primarily in Russia, Ukraine, Turkey and Germany, in the past few hours.
+Dubbed "Bad Rabbit," is reportedly a new Petya-like targeted ransomware attack against corporate networks, demanding 0.05 bitcoin (~ $285) as ransom from victims to unlock their systems.
+According to an initial analysis provided by the Kaspersky, the ransomware was distributed via drive-by download attacks, using fake Adobe Flash players installer to lure victims' in to install malware unwittingly.
+"No exploits were used, so the victim would have to manually execute the malware dropper, which pretends to be an Adobe Flash installer. We’ve detected a number of compromised websites, all of which were news or media websites." Kaspersky Lab said.
+However, security researchers at ESET have detected Bad Rabbit malware as 'Win32/Diskcoder.D' — a new variant of Petya ransomware, also known as Petrwrap, NotPetya, exPetr and GoldenEye.
+Bad Rabbit ransomware uses DiskCryptor, an open source full drive encryption software, to encrypt files on infected computers with RSA 2048 keys. Bad Rabbit does not use EternalBlue but does leverage EternalRomance RCE exploit to spread across victims' networks.
+Microsoft and F-Secure have also confirmed the presence of the exploit in the Bad Rabbit ransomware. EternalRomance is a remote code execution exploit that takes advantage of a flaw (CVE-2017-0145) in Microsoft's Windows Server Message Block (SMB), a protocol for transferring data between connected Windows computers, to bypass security over file-sharing connections, thereby enabling remote code execution on Windows clients and servers.
+ 
+Impact:
+Bad Rabbit
+ first scans the internal network for open SMB shares, tries a hardcoded list of commonly used credentials
+ to drop malware, and also uses Mimikatz
+ post-exploitation tool to extract credentials from the affected systems. Bad Rabbit can also exploit the Windows Management Instrumentation Command-line (WMIC) scripting interface in an attempt to execute code on other Windows systems on the network remotely, noted
+ EndGame. However, according to Cisco's Talos, Bad Rabbit also carries a code that uses EternalRomance, which allows remote hackers to propagate from an infected computer to other targets more efficiently.
+ 
+How to Protect Yourself:
+In order to protect yourself from Bad Rabbit, users are advised to disable WMI service to prevent the malware from spreading over your network.
+Update your systems regularly and keep a good and effective anti-virus security suite on your system.
+Since most ransomware spread through phishing emails, malicious adverts on websites, and third-party apps and programs, you should always exercise caution before falling for any of these.
+Most importantly, to always have a tight grip on your valuable data, keep a good backup routine in place that makes and saves copies of your files to an external storage device that isn't always connected to your PC.
+ 
+Reference:
+https://thehackernews.com/2017/10/bad-rabbit-ransomware-attack.html
+</html>

@@ -1,0 +1,65 @@
+---
+layout: post
+cover: false
+title: Fancy Bear DDoS for Ransom
+date:  2017-12-15 13:40:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/ghost.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+<html>
+Threat Summary: Decyphering the Noise Around ‘Meltdown’ and ‘Spectre’
+
+ 
+
+The McAfee Advanced Threat Research (ATR) Team has closely followed the attack techniques that have been named Meltdown and Spectre throughout the lead-up to their announcement on January 3.
+
+ 
+
+The vulnerabilities been categorized into two attacks, Meltdown (CVE-2017-5754) and Spectre (CVE-2017-5753 and CVE-2017-5715), which could allow attackers to steal sensitive data which is currently processed on the computer.
+
+Both attacks take advantage of a feature in chips known as "speculative execution," a technique used by most modern CPUs to optimize performance.
+
+"In order to improve performance, many CPUs may choose to speculatively execute instructions based on assumptions that are considered likely to be true. During speculative execution, the processor is verifying these assumptions; if they are valid, then the execution continues. If they are invalid, then the execution is unwound. Therefore, it is possible for such speculative execution to have "side effects which are not restored when the CPU state is unwound and can lead to information disclosure," which can be accessed using side-channel attacks.
+
+Meltdown Attack: Meltdown attack allows attackers to read not only kernel memory but also the entire physical memory of the target machines, and therefore all secrets of other programs and the operating system. Meltdown uses speculative execution to break the isolation between user applications and the operating system, allowing any application to access all system memory, including memory allocated for the kernel.
+
+Spectre Attack: Spectre attack breaks the isolation between different applications, allowing the attacker-controlled program to trick error-free programs into leaking their secrets by forcing them into accessing arbitrary portions of its memory, which can then be read through a side channel.
+
+Spectre attacks can be used to leak information from the kernel to user programs, as well as from virtualization hypervisors to guest systems.
+
+ 
+
+Who are affected?
+
+This vulnerability impacts almost every system, including desktops, laptops, cloud servers, as well as smartphones—powered by Intel, AMD, and ARM chips.
+
+ 
+
+How to Protect Yourself:
+
+There is no single fix for both the attacks since each requires protection independently.
+
+·         Windows — Microsoft has issued an out-of-band patch update for Windows 10, while other versions of Windows will be patched on the traditional Patch Tuesday on January 9, 2018
+
+·         MacOS — Apple had already fixed most of these security holes in macOS High Sierra 10.13.2 last month, but MacOS 10.13.3 will enhance or complete these mitigations.
+
+·         Linux — Linux kernel developers have also released patches by implementing kernel page-table isolation (KPTI) to move the kernel into an entirely separate address space.
+
+·         Android — Google has released security patches for Pixel/Nexus users as part of the Android January security patch update.  Other users have to wait for their device manufacturers to release a compatible security update.
+
+·         Allow scripting languages to execute only from trusted sites.
+
+·         Anti Virus vendors like McAfee have some detection capabilities around these threats,  . McAfee Windows Security Suite or McAfee Endpoint Security (ENS) can provide warnings if you visit a known dangerous site.McAfee products can also provide an alternate script-execution engine that prevents known malicious scripts from executing.
+
+ 
+
+Reference:
+
+https://thehackernews.com/2018/01/meltdown-spectre-vulnerability.html
+
+https://securingtomorrow.mcafee.com/mcafee-labs/decyphering-the-noise-around-meltdown-and-spectre/
+</html>

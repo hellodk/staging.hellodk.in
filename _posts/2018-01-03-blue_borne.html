@@ -1,0 +1,52 @@
+---
+layout: post
+cover: false
+title: Fancy Bear DDoS for Ransom
+date:  2017-12-15 13:40:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/ghost.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+<html>
+Threat Summary : The IoT Attack Vector “BlueBorne” Exposes Almost Every Connected Device
+
+
+Armis Labs revealed a new attack vector endangering major desktop, and IoT operating systems, including Windows, and Linux, and the devices using them. The new vector is dubbed “BlueBorne”, as it spread through the air (airborne) and attacks devices via Bluetooth. BlueBorne allows attackers to take control of devices, access corporate data and networks, penetrate secure “air-gapped” networks, and spread malware laterally to adjacent devices. BlueBorne is an attack vector by which hackers can leverage Bluetooth connections to penetrate and take complete control over targeted devices. The attack does not require the targeted device to be paired to the attacker’s device, or even to be set on discoverable mode. The BlueBorne attack vector can be used to conduct a large range of offenses, including remote code execution as well as Man-in-The-Middle attacks.
+
+
+
+Impact:
+
+The BlueBorne attack vector requires no user interaction, is compatible to all software versions, and does not require any preconditions or configurations aside of the Bluetooth being active. Unlike the common misconception, Bluetooth enabled devices are constantly searching for incoming connections from any devices, and not only those they have been paired with. This means a Bluetooth connection can be established without pairing the devices at all. This makes BlueBorne one of the most broad potential attacks found in recent years, and allows an attacker to strike completely undetected.
+
+
+
+Who are affected?
+
+Windows - All Windows computers since Windows Vista are affected by the “Bluetooth Pineapple” vulnerability which allows an attacker to perform a Man-in-The-Middle attack (CVE-2017-8628). This vulnerability resides in the Bluetooth stack, and enables the attacker to create a malicious  network interface on the victim’s device, re-configure IP routing and force the device to transmit all communication through it. This attack does not require any user interaction, authentication or pairing, making it also practically invisible.
+
+
+
+Linux -  Linux is the underlying operating system for a wide range of devices. The most commercial, and consumer-oriented platform based on Linux is the Tizen OS. All Linux devices running BlueZ are affected by the information leak vulnerability (CVE-2017-1000250).
+
+This vulnerability resides in the SDP server responsible for identifying other services using Bluetooth around the device. The flaw allows the attacker to send a set of crafted requests to the server, causing it to disclose memory bits in response. This can be used by an attacker to expose sensitive data from the Bluetooth process that may also contain encryption keys of Bluetooth communications.
+
+
+
+All Linux devices from version 3.3-rc1 (released in October 2011) are affected by the remote code execution vulnerability (CVE-2017-1000251).
+
+This vulnerability was found in the Bluetooth stack of the Linux Kernel, which is the very core of the operating system. An internal flaw in the L2CAP (Logical Link Control and Adaptation Protocol) that is used to connect between two devices causes a memory corruption. An attacker can use this memory corruption to gain full control of the device.
+
+
+
+Fix:
+
+Microsoft issued has security patches to all supported Windows versions on July 11, 2017, with coordinated notification on Tuesday, September 12.
+
+A kpatch for customers running Red Hat Enterprise Linux 7.2 or greater will be available. Please open a support case with Red-Hat to gain access to the kpatch. You can also use the below script to check if your Linux servers are vulnerable.
+
+https://access.redhat.com/sites/default/files/cve-2017-1000251-1.sh
+</html>

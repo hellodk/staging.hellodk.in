@@ -1,8 +1,8 @@
 ---
 layout: post
 cover: false
-title: lune de miel à andaman
-date:   2017-03-01 04:18:00
+title: REST API Best Practices
+date:   2017-12-14 04:18:00
 tags: travel
 subclass: 'post tag-travel'
 categories: 'dk'
@@ -10,38 +10,100 @@ navigation: True
 #logo: 'assets/images/ghost.png'
 cover: 'assets/images/travel/travel_cover.jpg'
 ---
+<html>
+REST API ARCHITECTURE – BEST PRACTICES
 
-While looking for a light yet powerful Configuration Management tool, I was going through some of the various available tools, and came across Ansible. After having a quick look at the features, something which caught my attention: "Ansible is agent-less", hence I decided to give it a try. Having used Ansible for some around more than 8+ months configuration management, I personally feel...Ansible is awesome!!
-So what is Ansible? Well, it is a configuration management tool, and it empowers you to configure/orchestrate multiple systems at great ease, saving a lot of downtime and resources.
-So how does it does that? The answer lies with ssh keys based agent forwarding. Ansible uses ssh for logging to the remote system, and can execute package installation, shell commands, install/update package management systems, clone git and anything under the sun you need for configuration management.
-So why don't you try your hands on Ansible and experience it's awesomeness....all you need to do is to install it on your host system.
+SOA(Service Oriented Architecture) has become a foundation for the most of the application that are developed today. A service oriented architecture is an architectural pattern which enables collection of services to communicate with external/internal parties to pass data or for services coordinating. Let’s start from what’s a service.
+What’s a Service/API
+A service is a function that is well-defined, self-contained, and does not depend on the context or state of other services.
+In other words an interface used by software components to communicate with each other. Let understand the difference between API and Web Services. A Web Service is a type of API, almost always one that operates over HTTP. In the modern world there are two types of web services that are used.
+SOAP
+REST
+We can’t compare REST and SOAP since SOAP is a protocol and REST is an architectural pattern. People mostly get confused when selecting one for their application. If you are wondering what’s the difference between these two you can get a good start from here and here.
+Our today’s focus is on REST. How we can implement a perfect REST API? What are the best practices? Let’s get down to business.
+REST Best Practices 101
+1. Abstract vs Concrete
+When designing a REST API you should consider to make API concrete as possible. It will make the API less confusing to the consumers.
+Abstract vs Concrete 
+Abstract vs Concrete
+2. CRUD Operations
+There are four available methods when designing a REST API which are GET, POST, PUT and DELETE. Below is the proposed methodology to implement CRUD operations in a REST API. Note that this is suggested by me and you can alter this as per your requirement.
+Resource	POST	GET	PUT	DELETE
+/dog	Create a new dog	List dogs	Replace dogs with new dogs(Bulk update)	 Delete all dogs
+/dog/1234	Error	 Show dog	If exist update dog else ERROR	 Delete dog
+ 
+I know there is a confusion resolve around PUT and DELETE. Read more here and here to clarify.
+3. Error Handling
+Error handling is one that get less attention but most important part of the any REST API. You must give hints as possible for the API consumers about the error and why it has occurred. Also make you that through the API you should provide granular level error messages. You can format it as follows.
 
-Ansible does not have it's own process, and unlike other configuration tolls available, it is agent-less!!
+{
+   "status": 401,
+   "error_code": 2005,
+   "error_message": "Authentication token has expired",
+   "more_info": "http://dasunhegoda.com/api/doc/token_error"
+}
+1
+2
+3
+4
+5
+6
+{
+   "status": 401,
+   "error_code": 2005,
+   "error_message": "Authentication token has expired",
+   "more_info": "http://dasunhegoda.com/api/doc/token_error"
+}
+You can make use of HTTP status code for this purpose.
+4. API Versioning
+In any given API API version is mandatory to maintain consistency. It can be done in many way but below is the preferred methods by me.
+Method 1
+You can use the letter ‘v’ in the URL to denote the API version as below.
 
-Ansible ships in 2 forms:
-1. Core Ansible
-2. Ansible Tower
+http://dasunhegoda.com/api/v2/dog/1234
+1
+http://dasunhegoda.com/api/v2/dog/1234
+Method 2
+You can use the addional parameter at the end of the URL.
 
-Installation:
-1. OS package manager:
-sudo apt-get install software-properties-common
-sudo apt-add-repository ppa:ansible/ansiblesudo apt-get update
-sudo apt-get install ansible
-2. Via python pip:
-sudo pip install ansible
+http://dasunhegoda.com/api/dog/1234?v=2.0
+1
+http://dasunhegoda.com/api/dog/1234?v=2.0
+Different people have different opinion on API version. You can read more here.
+5. Filtering
+Don’t provide unnecessary data to the API consumers. It will clutter you REST API unnecessarily. Let the developer choose what he needs. For this we can use filtering methods in our APIs.
 
-Ansible uses a configuration file, called host files for doing ssh to the remote machines. By default it is located in /etc/ansible/hosts
-All you need to do is to add the host ip and the ssh_username to the file, and the public key of your host to the remote machine and you are all set to go!!
+/dogs/1234?value1,value2,value3,value4
+1
+/dogs/1234?value1,value2,value3,value4
+Also you can use pagination for this purpose as well where you don’t have to return all the results at once. Below query will be familiar to you since it operates same as MySQL works.
 
-Commands:
-ansible all -i ansible_hosts -m ping
-ansible all -m ping -u deepak
-ansible -m shell -a 'free -m' host1
-ansible all -m shell -a 'free -m' -u dk
+/dogs?limit=25&offset=20
 
-Playbooks are Ansible’s configuration, deployment, and orchestration language. They can describe a policy you want your remote systems to enforce, or a set of steps in a general IT process.
-
-Playbooks are written in YAML language, and comprises of Plays
-
-Running a Playbook in Ansible:
-ansible-playbook playbook.yml -f 10
+You can read more <a href="http://stackoverflow.com/questions/5020704/how-to-design-restful-search-filtering" target="_blank">here</a>.
+1
+2
+3
+/dogs?limit=25&offset=20
+ 
+You can read more <a href="http://stackoverflow.com/questions/5020704/how-to-design-restful-search-filtering" target="_blank">here</a>.
+6. Security
+Security is one of the major concerns when compared to SOAP because still there are no standards such as ws-security defined for REST.
+You can use HTTPS across your APIs.
+Don’t forget to include timestamp in each and every API request and response. Make sure to log them all. In case of a dispute you can refer them.
+Use a access_token to make sure that API is invoked by the trust parties. Beforehand you have to deliver the access_token whereas only API consumers have an access_token can invoke the API. Read more.
+7. Analytics
+Once you start logging each and every API request and response you can build a analytical platform on top of that. If the number of records are high you might have to consider technologies such as BigData. Having analytics in your REST API will give you a good insight of what’s happening your API.
+8. Documentation
+Proper Documentation is vital for the API. It doesn’t matter how great your API design is if the API consumers can’t used it properly. You can use tools such as apidocjs for this purpose. It’s really easy to get started.
+9. Stability and Consistency
+Depending on your requirement you should consider highly available architecture for you REST API. If you are wondering how to implement high availability in your REST API I have an article written on the subject. Please refer here.
+10. URL Structure
+You have to structure the URL in manner it’s intuitive. Select a domain which is easy for marking as well. eg :- api.yourdomain.com. When structuring your REST API you can use the following format.
+GET tasks/5/messages – Retrieves list of messages for task #5
+GET tasks/5/messages/10 – Retrieves the 10th messages for task #5
+POST tasks/5/messages – Create a new message for task #5
+DELETE tasks/5/messages/10 – Delete the 10th messages of task #5
+PUT tasks/5/messages/12 – Update the 12th messages of task #5
+If you have developed your REST API properly you should have above features in it. In other words above should be kept in mind when designing your REST API. So that’s it about REST API architecture. If you have any questions let me know in the comments below. Your feedback is highly appreciated(happy-face)
+</html>
