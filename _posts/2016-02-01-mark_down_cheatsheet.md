@@ -7,7 +7,7 @@ tags: tutorials
 subclass: 'post tag-fiction'
 categories: 'dk'
 navigation: True
-#logo: 'assets/images/ghost.png'
+#logo: 'assets/images/utilities/home_icon.png'
 cover: 'assets/images/cover1.jpg'
 ---
 Source : https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet

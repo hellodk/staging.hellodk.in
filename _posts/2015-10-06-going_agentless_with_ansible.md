@@ -1,13 +1,13 @@
 ---
 layout: post
 cover: false
-title: Going Agntless with Ansible
-date:   2015-04-06 10:18:00
+title: Going Agentless with Ansible
+date: 2015-04-06 10:18:00
 tags: tutorials
 subclass: 'post tag-tutorials'
 categories: 'dk'
 navigation: True
-#logo: 'assets/images/ghost.png'
+logo: 'assets/images/utilities/home_icon.png'
 cover: 'assets/images/cover4.jpg'
 ---
 

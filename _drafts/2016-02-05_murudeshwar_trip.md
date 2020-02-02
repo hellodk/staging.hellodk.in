@@ -7,7 +7,7 @@ tags: travel life-style blog
 subclass: 'post tag-fiction'
 categories: 'dk'
 navigation: True
-logo: 'assets/images/ghost.png'
+logo: 'assets/images/utilities/home_icon.png'
 cover: 'assets/images/cover1.jpg'
 ---
 People:

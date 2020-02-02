@@ -12,14 +12,18 @@ description: "A beautiful narrative written over an elegant publishing platform.
 author: 'Deepak Gupta'
 # edit 'categories' in the front matter of every post to match this username
 nickname: casper
-bio: 'A full time technologist cum foodie. He spends most of the time playing with open source tools and prefers hanging out with friends. Deepak has been a taveller since ages, besides being a hardcore biker and loves doing photogrpahy as hobby.'
+bio: 'A full time technologist cum foodieeeeeee...
+I spend most of my time playing with open source tools and technologies.
+I prefer hanging out most of the time, and have been a taveller since ages, 
+besides being a biker at heart I do love to practice photography in my liesure.'
+
 location: 'Bangalore, INDIA'
 url: 'http://hellodk.in/'
-image: 'assets/images/casper.png'
+image: 'assets/images/resume/dk.jpg'
 
-short_url: 'http://hellodk.in/'
-#google_analytics: UA-69281367-1
-disqus: username
+short_url: 'https://hellodk.in/'
+google_analytics: UA-84547172-1
+disqus: hellodk
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
 baseurl: /
 
