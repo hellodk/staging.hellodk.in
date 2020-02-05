@@ -7,7 +7,7 @@ tags: tutorials
 subclass: 'post tag-fiction'
 categories: 'dk'
 navigation: True
-#logo: 'assets/images/utilities/home_icon.png'
+logo: 'assets/images/utilities/home_icon.png'
 cover: 'assets/images/unix_time_sharing/unix-wallpaper.png'
 ---
 
