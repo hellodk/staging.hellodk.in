@@ -18,10 +18,10 @@ I prefer hanging out most of the time, and have been a taveller since ages,
 besides being a biker at heart I do love to practice photography in my liesure.'
 
 location: 'Bangalore, INDIA'
-url: 'http://hellodk.in/'
+url: 'https://hellodk.io/'
 image: 'assets/images/resume/dk.jpg'
 
-short_url: 'https://hellodk.in/'
+short_url: 'https://hellodk.io/'
 google_analytics: UA-84547172-1
 disqus: hellodk
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
@@ -63,8 +63,8 @@ repo: hellodk.github.io
 branch: master
 relative_source: ../jasper/
 destination: ../hellodk.github.io/
-production_url:  https://hellodk.github.io/ #https://hellodk.in
-source_url:      https://github.com/hellodk/ #https://hellodk.in
+production_url:  https://hellodk.github.io/ #https://hellodk.io
+source_url:      https://github.com/hellodk/ #https://hellodk.io
 
 exclude:
   - README.md
