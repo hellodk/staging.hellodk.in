@@ -18,6 +18,12 @@ current: tag
    {% assign tag_description='A series of short photography tips and tricks.' %}
 {% endif %}
 
+
+{% if page.url contains 'fiction' %}
+   {% assign new_cover='assets/images/fiction_cover.jpg' %}
+   {% assign tag_description='A series of short fictinal stories.' %}
+{% endif %}
+
 <!-- < default}} -->
 <!-- The tag above means - insert everything in this file into the [body] of the default.hbs template -->
 
