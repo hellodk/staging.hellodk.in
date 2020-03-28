@@ -1,0 +1,45 @@
+---
+layout: post
+cover: false
+title: Getting started with Ubuntu SDK
+date:  2020-03-28 15:50:35
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/cover4.jpg'
+---
+The Ubuntu SDK is your full-featured integrated development environment (IDE) for writing Ubuntu apps.
+
+Based on QtCreator, the Ubuntu SDK provides all the tools you need to get up and running and super productive developing Ubuntu apps of all types, with QML, HTML5 and C++ supported now and other possibilities on the radar, so stay tuned!
+
+Ubuntu SDK highlights
+All the technical brilliance and capabilities of the QtCreator platform with additional Ubuntu-specific features layered on top
+New Project Wizard simplifies creating new app and scope projects
+Bazaar (and other) version control system built-in
+Beautiful GUI with wide range of advanced code editing features and preferences
+Run app projects from the SDK on the development system, on attached devices, and on Ubuntu emulators
+Manage attached physical devices and create and manage Ubuntu emulator instances
+Package the app project as a click package for easy
+Cross build click packages using CMake to different architectures (like armhf)
+Install and run click packages on devices and Ubuntu emulators
+Debug support
+Next steps
+Get started and easily install the Ubuntu SDK.
+Enable developer mode on your Ubuntu device.
+Learn how to create new projects, run apps from the SDK, use the emulator, how to cross build and more. Check out the SDK tutorials.
+
+Adding the SDK Release PPA
+Please add the SDK Release PPA as follows, entering your password as prompted:
+
+$ sudo add-apt-repository ppa:ubuntu-sdk-team/ppa
+
+Installing the Ubuntu SDK
+Install as follows:
+
+$ sudo apt update && sudo apt install ubuntu-sdk -y
+
+Tip: Some people, particularly those running the development version of Ubuntu, should ensure all installed packages are updated to the latest available versions with:
+
+$ sudo apt update && sudo apt dist-upgrade -y
