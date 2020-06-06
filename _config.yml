@@ -5,7 +5,7 @@ paginate: 5
 language: 'en-uk'
 # bundle exec jekyll serve --watch
 # Website info
-name: 'Curosity is the most powerful thing you own'
+name: 'Curiosity is the most powerful thing you own'
 description: "A beautiful narrative written over an elegant publishing platform. The story begins here..."
 
 # Author's info
