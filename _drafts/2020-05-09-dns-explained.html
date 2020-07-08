@@ -1,0 +1,62 @@
+---
+layout: post
+#cover: 'assets/images/cover3.jpg'
+cover: false
+title: DNS Explained
+date:   2014-09-27 10:18:00
+tags: test content tutorials
+subclass: 'post tag-tutorials''
+categories: 'dk'
+navigation: True
+logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+A
+AAAA
+Alias
+CNAME
+
+Bare domain @ hostname
+
+Domain MX Records
+Domain email service
+
+CNAME for www
+
+URL redirect for @
+
+masked vs unmasked
+unmasked forwarding
+
+URL Frame or Masked Forwarding
+URL Redirect
+
+NS Record
+
+SRV Record
+TXT Record
+URL Redirect
+
+MX
+MXE
+
+@ - used to point a root domain (yourdomain.tld) to the IP address:
+A Record | @ |  11.22.33.44
+
+www - is selected when it is needed to point www.yourdomain.tld to the IP address:
+A Record | www |  11.22.33.44
+
+[any host] - you can insert any name of a subdomain that should be pointed to the IP address:
+A Record | blog |  11.22.33.44
+
+* -  a wildcard record that matches requests for non-existent subdomains:
+A Record | * |  11.22.33.44
+
+https://www.namecheap.com/support/knowledgebase/article.aspx/319/2237/how-can-i-set-up-an-a-address-record-for-my-domain
+
+References: https://www.namecheap.com/support/knowledgebase/article.aspx/579/2237/which-record-type-option-should-i-choose-for-the-information-im-about-to-enter/
+
+
+https://www.namecheap.com/support/knowledgebase/article.aspx/579/2237/which-record-type-option-should-i-choose-for-the-information-im-about-to-enter
+
+https://www.namecheap.com/support/knowledgebase/article.aspx/319/2237/how-can-i-set-up-an-a-address-record-for-my-domain
