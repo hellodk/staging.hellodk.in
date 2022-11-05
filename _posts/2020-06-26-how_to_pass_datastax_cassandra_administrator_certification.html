@@ -1,0 +1,122 @@
+---
+layout: post
+cover: true
+title: Kubernetes Cluster on Vagrant
+date:  2016-02-04 12:30:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/kubernetes/kubernetes_logo.png'
+---
+<p>In this tutorial we will cover the installation of a Kubernetes Cluster over 3 virtual machines spawned using Virtualbox and Vagrant.
+This can be also useful to install Kubernetes over Bare Metal server or any sort of Virtual Machines as well.
+</p>
+
+<h3>Assumptions</h3>
+<ul>
+	<li>Vagrant and Virtualbox are already installed.</li>
+	<li>We have 3 Centos 7 virtual machines running.</li>
+</ul>
+
+<h3>Pre-requisites</h3>
+<ul>
+<li>Set the host-names for all 3 machines with the below commands</li>
+<ul>
+	<li style="color: #4233ff">sudo hostnamectl set-hostname kubem</li>
+    <li style="color: #4233ff">sudo hostnamectl set-hostname worker1</li>
+    <li style="color: #4233ff">sudo hostnamectl set-hostname worker2</li>
+</ul>
+
+<li>Disable selinux</li>
+<ul>
+    <li style="color: #4233ff">set selinux 0</li>
+    <li>edit the file /etc/sysconfig/selinux and disable selinux</li>
+    or use the below command directly to disable selinux
+    <li style="color: #4233ff">sudo sed -i s/^SELINUX=.*$/SELINUX=disabled/ /etc/selinux/config</li>
+</ul>
+
+<li>Disable swap memory</li>
+<ul>
+	<li style="color: #4233ff">swapoff -a</li>
+	<li>vim /etc/fstab</li>
+	or
+	<li style="color: #4233ff">sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab</li>
+</ul>
+
+<li>Set net bridge  for proper traffic routing</li>
+<ul>
+	<li style="color: #4233ff">cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF</li>
+</ul>
+
+<li >Reload sysctl</li>
+<ul>
+    <li style="color: #4233ff">sysctl --system</li>
+</ul>
+
+<li>Set DNS entries in /etc/hosts</li>
+<ul>
+	<li style="color: #4233ff">192.168.10.60 kubem</li>
+	<li style="color: #4233ff">192.168.10.61 worker1</li>
+	<li style="color: #4233ff">192.168.10.62 worker2</li>
+</ul>
+
+<li>Docker Installation</li>
+<ul>
+	<li style="color: #4233ff">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</li>
+	<li style="color: #4233ff">yum update -y</li>
+	<li style="color: #4233ff">yum install -y yum-utils device-mapper-persistent-data lvm2 -y</li>
+	<li style="color: #4233ff">sudo yum install docker-ce -y</li>
+	<li style="color: #4233ff">sudo yum install docker-ce -y</li>
+	<li style="color: #4233ff">systemctl enable docker</li>
+	<li style="color: #4233ff">systemctl start docker</li>
+	<li style="color: #4233ff">systemctl status docker</li>
+	<li style="color: #4233ff">systemctl status docker</li>
+	<li style="color: #4233ff">docker version</li>
+	<li style="color: #4233ff">docker info</li>
+</ul>
+
+<li>Installing kubelet, kubeadm, kubectl</li>
+<ul>
+<li style="color: #4233ff">cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+</li>
+<li style="color: #4233ff">yum install -y kubelet-1.15.1 kubeadm-1.15.1</li>
+<li style="color: #4233ff">systemctl enable kubelet</li>
+<li style="color: #4233ff">systemctl start kubelet</li>
+</ul>
+
+<li>Initialize the kubernetes cluster</li>
+<ul>
+	<li style="color: #4233ff">kubeadm init --apiserver-advertise-address=172.31.19.193 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.244.0.0/12</li>
+</ul>
+
+<li>Become Non-root user</li>
+<ul>
+<li style="color: #4233ff">mkdir -p $HOME/.kube</li>
+<li style="color: #4233ff">sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</li>
+<li style="color: #4233ff">sudo chown $(id -u):$(id -g) $HOME/.kube/config</li>
+</ul>
+
+<li>Creating the CNI and Dashboard:</li>
+<ul>
+<li style="color: #4233ff">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</li>
+<li style="color: #4233ff">kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml</li>
+<li style="color: #4233ff">kubectl -n kube-system edit service kubernetes-dashboard</li>
+change from ClusterIP to NodePort
+<li style="color: #4233ff">kubectl describe services kubernetes-dashboard -n kube-system</li>
+<li style="color: #4233ff">kubectl -n kube-system get secret</li>
+<li style="color: #4233ff">kubectl -n kube-system describe secret namespace-contoller-token-xyxyx</li>
+now use this token to login to the cluster IP</ul></EOF></li></ul></EOF></li></ul></ul>

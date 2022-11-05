@@ -1,0 +1,6 @@
+gem install redcarpet
+gem install pygments.rb
+jekyll serve
+gem install bundle
+bundle install
+bundle exec jekyll serve

@@ -1,0 +1,158 @@
+---
+layout: post
+cover: false
+title: REST API Best Practices
+date:   2017-12-14 04:18:00
+tags: tutorials
+subclass: 'post tag-travel'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/travel/travel_cover.jpg'
+---
+<html>
+REST API ARCHITECTURE – BEST PRACTICES
+
+SOA(Service Oriented Architecture) has become a foundation for the most of the application that are developed today</br>
+A service oriented architecture is an architectural pattern which enables collection of services to communicate with external/internal parties to pass data or for services coordinating</br>
+Let’s start from what’s a service.
+What’s a Service/API
+A service is a function that is well-defined, self-contained, and does not depend on the context or state of other services.
+In other words an interface used by software components to communicate with each other</br>
+Let understand the difference between API and Web Services</br>
+A Web Service is a type of API, almost always one that operates over HTTP</br>
+In the modern world there are two types of web services that are used.
+SOAP
+REST
+We can’t compare REST and SOAP since SOAP is a protocol and REST is an architectural pattern</br>
+People mostly get confused when selecting one for their application</br>
+If you are wondering what’s the difference between these two you can get a good start from here and here.
+Our today’s focus is on REST</br>
+How we can implement a perfect REST API? What are the best practices? Let’s get down to business.
+REST Best Practices 101
+1</br>
+Abstract vs Concrete
+When designing a REST API you should consider to make API concrete as possible</br>
+It will make the API less confusing to the consumers.
+Abstract vs Concrete 
+Abstract vs Concrete
+2</br>
+CRUD Operations
+There are four available methods when designing a REST API which are GET, POST, PUT and DELETE</br>
+Below is the proposed methodology to implement CRUD operations in a REST API</br>
+Note that this is suggested by me and you can alter this as per your requirement.
+Resource	POST	GET	PUT	DELETE
+/dog	Create a new dog	List dogs	Replace dogs with new dogs(Bulk update)	 Delete all dogs
+/dog/1234	Error	 Show dog	If exist update dog else ERROR	 Delete dog
+ 
+I know there is a confusion resolve around PUT and DELETE</br>
+Read more here and here to clarify.
+3</br>
+Error Handling
+Error handling is one that get less attention but most important part of the any REST API</br>
+You must give hints as possible for the API consumers about the error and why it has occurred</br>
+Also make you that through the API you should provide granular level error messages</br>
+You can format it as follows.
+
+{
+   "status": 401,
+   "error_code": 2005,
+   "error_message": "Authentication token has expired",
+   "more_info": "http://dasunhegoda.com/api/doc/token_error"
+}
+1
+2
+3
+4
+5
+6
+{
+   "status": 401,
+   "error_code": 2005,
+   "error_message": "Authentication token has expired",
+   "more_info": "http://dasunhegoda.com/api/doc/token_error"
+}
+You can make use of HTTP status code for this purpose.
+4</br>
+API Versioning
+In any given API API version is mandatory to maintain consistency</br>
+It can be done in many way but below is the preferred methods by me.
+Method 1
+You can use the letter ‘v’ in the URL to denote the API version as below.
+
+http://dasunhegoda.com/api/v2/dog/1234
+1
+http://dasunhegoda.com/api/v2/dog/1234
+Method 2
+You can use the addional parameter at the end of the URL.
+
+http://dasunhegoda.com/api/dog/1234?v=2.0
+1
+http://dasunhegoda.com/api/dog/1234?v=2.0
+Different people have different opinion on API version</br>
+You can read more here.
+5</br>
+Filtering
+Don’t provide unnecessary data to the API consumers</br>
+It will clutter you REST API unnecessarily</br>
+Let the developer choose what he needs</br>
+For this we can use filtering methods in our APIs.
+
+/dogs/1234?value1,value2,value3,value4
+1
+/dogs/1234?value1,value2,value3,value4
+Also you can use pagination for this purpose as well where you don’t have to return all the results at once</br>
+Below query will be familiar to you since it operates same as MySQL works.
+
+/dogs?limit=25&offset=20
+
+You can read more <a href="http://stackoverflow.com/questions/5020704/how-to-design-restful-search-filtering" target="_blank">here</a>.
+1
+2
+3
+/dogs?limit=25&offset=20
+ 
+You can read more <a href="http://stackoverflow.com/questions/5020704/how-to-design-restful-search-filtering" target="_blank">here</a>.
+6</br>
+Security
+Security is one of the major concerns when compared to SOAP because still there are no standards such as ws-security defined for REST.
+You can use HTTPS across your APIs.
+Don’t forget to include timestamp in each and every API request and response</br>
+Make sure to log them all</br>
+In case of a dispute you can refer them.
+Use a access_token to make sure that API is invoked by the trust parties</br>
+Beforehand you have to deliver the access_token whereas only API consumers have an access_token can invoke the API</br>
+Read more.
+7</br>
+Analytics
+Once you start logging each and every API request and response you can build a analytical platform on top of that</br>
+If the number of records are high you might have to consider technologies such as BigData</br>
+Having analytics in your REST API will give you a good insight of what’s happening your API.
+8</br>
+Documentation
+Proper Documentation is vital for the API</br>
+It doesn’t matter how great your API design is if the API consumers can’t used it properly</br>
+You can use tools such as apidocjs for this purpose</br>
+It’s really easy to get started.
+9</br>
+Stability and Consistency
+Depending on your requirement you should consider highly available architecture for you REST API</br>
+If you are wondering how to implement high availability in your REST API I have an article written on the subject</br>
+Please refer here.
+10</br>
+URL Structure
+You have to structure the URL in manner it’s intuitive</br>
+Select a domain which is easy for marking as well</br>
+eg :- api.yourdomain.com</br>
+When structuring your REST API you can use the following format.
+GET tasks/5/messages – Retrieves list of messages for task #5
+GET tasks/5/messages/10 – Retrieves the 10th messages for task #5
+POST tasks/5/messages – Create a new message for task #5
+DELETE tasks/5/messages/10 – Delete the 10th messages of task #5
+PUT tasks/5/messages/12 – Update the 12th messages of task #5
+If you have developed your REST API properly you should have above features in it</br>
+In other words above should be kept in mind when designing your REST API</br>
+So that’s it about REST API architecture</br>
+If you have any questions let me know in the comments below</br>
+Your feedback is highly appreciated(happy-face)
+</html>

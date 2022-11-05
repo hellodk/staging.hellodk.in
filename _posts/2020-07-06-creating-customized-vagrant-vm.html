@@ -1,0 +1,50 @@
+---
+layout: post
+title: Pushing Custom Vagrant Boxes to Vagrant Cloud
+class: 'post'
+logo: 'assets/images/utilities/home_icon.png'
+current: about
+cover: 'assets/images/utilities/IMG_75751.JPG'
+date:   2020-07-08 19:25:00
+tags: about
+subclass: 'post tag-tutorials'
+categories: 'about'
+navigation: True
+---
+<html>
+<header>
+</header>
+	<body>
+		<h3>The Problem Statement</h3>
+		<p>
+			I use Vagrant very heavily in my daya to day work. That means I have to create and destroy virtual machines at a very past rate.
+			Now every time I create a new VM, all the set of basic tools and dependncies needs to be reinstalled - sheer waste to time and n/w resources(especially on a slow network).
+        <h3>The Solution</h3>
+        <p>
+        	I decided to create a base image with all basic tools I use and publish it to Vagrant Cloud and use it in my subsequent VM's. So if this fits your use case too, follow along....
+        </p>
+        <h4>Prerequisites</h4>
+        <ul>
+        	<li>Vagrant Cloud Account</li>
+			<li>md5sum installed</li>
+		</ul>
+		<h4>Steps to follow</h4>
+		<ul>
+			<li><h6>Create a directory for Vagrant</h6>
+				<pre><code>--authorization-mode=RBAC</code></pre>
+				<code>
+					cd ~
+					mkdir centos7
+
+				</code>
+				<h5>Prepare your VM from any base image</h5>
+				<p>Use the below configuration to prepare your base image</p>
+				<code>Testing</code>
+			</li>
+Package the vm into a file with .box extension with the below commands
+vagrant package --output centos7.box
+Then calculate the md5 cchecksum for your created image
+md5sum centos.box
+Then publish it over the Vagrant hub
+	</body>
+</html>

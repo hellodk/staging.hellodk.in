@@ -1,0 +1,83 @@
+---
+layout: post
+cover: false
+title: Fancy Bear DDoS for Ransom
+date:  2017-12-15 13:40:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+<html>
+Threat Summary : ERT Threat Alert - Fancy Bear DDoS for Ransom
+ 
+Radware’s Emergency Response Team (ERT) has identified an emerging
+ransom denial-of-service (RDoS) campaign from a group identifying itself as Fancy Bear. The group has been distributing extortion emails to payment processing vendors in multiple locations across the globe.
+In RDoS attacks, the perpetrators send a letter threatening to attack an organization—rendering its business, operations or capability unavailable—unless a ransom is paid by the deadline. This extortion method has grown in popularity every year since 2010 and typically come in the form of a volumetric distributed denial-of-service (DDoS) attack. However, it is increasingly in vogue to find techniques that are more piercing and more efficient without generating large volumes. The most advanced attacks combine both volumetric and non-volumetric cyber-attack techniques.
+At the end of April, a group claiming to be Fancy Bear began sending out extortion attempts. The extortionist behind this campaign attempted to intimidate their victims by using the name of APT28 (Fancy Bear) and an infamous cyber-espionage group. APT28 is believed to be a nation state-level attacker that uses zero-day exploits and spear phishing attacks to spread malware.
+ 
+Who are affected?
+The group claiming to be Fancy Bear is targeting a limited number of financial services organizations – payment processers under the threat of an attack from the Mirai Botnet. Each letter contains a unique bitcoin address. In the note, Fancy Bear listed the IP address of the victim and targeted them with a sample attack.
+ 
+Threat Summary : World's Biggest Botnet Just Sent 12.5 Million Emails With Scarab Ransomware
+ 
+A massive malicious email campaign that stems from the world's largest spam botnet Necurs is spreading a new strain of ransomware at the rate of over 2 million emails per hour and hitting computers across the globe.
+The popular malspam botnet Necrus which has previously found distributing Dridex banking trojan, Trickbot banking trojan, Locky ransomware, and Jaff ransomware, has now started spreading a new version of Scarab ransomware.
+According to F-Secure, Necurs botnet is the most prominent deliverer of spam emails with five to six million infected hosts online monthly and is responsible for the biggest single malware spam campaigns.
+Scarab ransomware is a relatively new ransomware family that was initially spotted by ID Ransomware creator Michael Gillespie in June this year.
+ 
+According to the security firm Forcepoint, the massive email campaign spreading Scarab ransomware virus started at approximately 07:30 UTC on 23 November (Thursday) and sent about 12.5 million emails in just six hours.
+The Forcepoint researchers said "the majority of the traffic is being sent to the .com top-level domain (TLD). However, this was followed by region-specific TLDs for the United Kingdom, Australia, France, and Germany."
+The spam email contains a malicious VBScript downloader compressed with 7zip that pulls down the final payload, with one of these subject lines:
+Scanned from Lexmark
+Scanned from Epson
+Scanned from HP
+Scanned from Canon
+As with previous Necurs botnet campaigns, the VBScript contained a number of references to the widely watched series Game of Thrones, like the strings 'Samwell' and 'JohnSnow.'
+The final payload is the latest version of Scarab ransomware with no change in filenames, but it appends a new file extension with ".[suupport@protonmail.com].scarab" to the encrypted files.
+Once done with the encryption, the ransomware then drops a ransom note with the filename "IF YOU WANT TO GET ALL YOUR FILES BACK, PLEASE READ THIS.TXT" within each affected directory.
+The ransom note does not specify the amount being demanded by the criminals; instead, it merely states that "the price depends on how fast you [the victim] write to us."
+However, Scarab ransomware offers to decrypt three files for free to prove the decryption will work: "Before paying you can send us up to 3 files for free decryption."
+ 
+How to Protect Yourself:
+Keep a good backup routine in place that makes their copies to an external storage device that is not always connected to your PC in order to always have a tight grip on all your important files and documents.
+Always be suspicious of any uninvited document sent over an email and should never click on links provided in those documents unless verifying the source.
+ 
+ 
+Threat Summary : FortiOS web GUI login disclaimer redir parameter XSS vulnerability
+ 
+A reflected XSS vulnerability exists in FortiOS web GUI "Login Disclaimer" redir parameter. It is potentially exploitable by a remote unauthenticated attacker, via sending a maliciously crafted URL to a victim who has an open session on the web GUI. Visiting that malicious URL may cause the execution of arbitrary javascript code in the security context of the victim's browser.
+ 
+Impact:
+Cross-site scripting (XSS)
+ 
+Who are affected?
+Firmware Version 5.6: FortiOS 5.6.0
+Firmware Version 5.4: FortiOS 5.4.0 to 5.4.5
+Other Firmware Version are not affected
+ 
+How to Protect Yourself:
+Firmware Version 5.6: Upgrade to FortiOS 5.6.1 or above
+Firmware Version 5.4: Upgrade to FortiOS 5.4.6 or above.
+ 
+Reference:
+http://fortiguard.com/psirt/FG-IR-17-113
+ 
+Threat Summary : FortiClient privilege escalation vulnerability
+ 
+A low privileged user may be able to execute arbitrary code by exploiting a FortiClient Named Pipe vulnerability.
+ 
+Impact:
+Privilege escalation
+ 
+Who are affected?
+FortiClient Windows 5.4.1, 5.4.2.
+ 
+How to Protect Yourself:
+Upgrade to FortiClient Windows: 5.4.3 or 5.6.0
+ 
+Reference:
+http://fortiguard.com/psirt/FG-IR-16-095
+</html>
