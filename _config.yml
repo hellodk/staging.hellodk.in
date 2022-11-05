@@ -3,23 +3,27 @@ markdown: redcarpet
 highlighter: pygments
 paginate: 5
 language: 'en-uk'
-
+# bundle exec jekyll serve --watch
 # Website info
-name: 'Curosity is the most powerful thing you own'
-description: "A beautiful narrative written an elegant publishing platform. The story begins here."
+name: 'Curiosity is the most powerful thing you own'
+description: "A beautiful narrative written over an elegant publishing platform. The story begins here..."
 
 # Author's info
-author: 'Deepak Kumar Gupta'
+author: 'Deepak Gupta'
 # edit 'categories' in the front matter of every post to match this username
 nickname: casper
-bio: 'A full time technologist cum foodie. He spends most of the time playing with open source tools and prefers hanging out with friends. Deepak has been a taveller since ages, besides being a hardcore biker and loves doing photogrpahy as hobby.'
-location: 'Bangalore, INDIA'
-url: 'http://hellodk.github.io/'
-image: 'assets/images/casper.png'
+bio: 'A full time technologist cum foodieeeeeee...
+I spend most of my time playing with open source tools and technologies.
+I prefer hanging out most of the time, and have been a taveller since ages, 
+besides being a biker at heart I do love to practice photography in my liesure.'
 
-short_url: 'hellodk.github.io/'
-#google_analytics: UA-69281367-1
-disqus: username
+location: 'Bangalore, INDIA'
+url: 'https://hellodk.io/'
+image: 'assets/images/resume/dk.jpg'
+
+short_url: 'https://hellodk.io/'
+google_analytics: UA-84547172-1
+disqus: hellodk
 # edit baseurl to simply '/' if using as your personal page (instead of a project page)
 baseurl: /
 
@@ -58,9 +62,9 @@ username: hellodk
 repo: hellodk.github.io
 branch: master
 relative_source: ../jasper/
-destination: ../jasper-pages/
-production_url:  https://hellodk.github.io/
-source_url:      https://github.com/hellodk/
+destination: ../hellodk.github.io/
+production_url:  https://hellodk.github.io/ #https://hellodk.io
+source_url:      https://github.com/hellodk/ #https://hellodk.io
 
 exclude:
   - README.md
