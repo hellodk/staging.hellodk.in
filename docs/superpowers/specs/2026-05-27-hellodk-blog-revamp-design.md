@@ -1,4 +1,4 @@
-# hellodk.in Blog Revamp — Design Spec
+# hellodk.io Blog Revamp — Design Spec
 
 **Date:** 2026-05-27  
 **Author:** Deepak Gupta (hellodk)  
@@ -56,8 +56,8 @@
 
 ## 4. Domains
 
-- **hellodk.in** — canonical primary domain
-- **hellodk.io** — redirects to hellodk.in (Cloudflare redirect rule)
+- **hellodk.io** — canonical primary domain
+- **hellodk.in** — redirects to hellodk.io (Cloudflare redirect rule)
 - Both point to Cloudflare Pages deployment
 - Old `staging.hellodk.in` repo becomes the new Astro repo (same Git, new build system)
 - Cloudflare Pages preview branches replace the old staging workflow
@@ -179,7 +179,7 @@ draft: false
 
 | Post | Title |
 |------|-------|
-| 1 | *"Why I moved hellodk.in from Jekyll to Astro + Cloudflare Pages"* |
+| 1 | *"Why I moved hellodk.io from Jekyll to Astro + Cloudflare Pages"* |
 | 2 | *"Two years of dark: from Universal Analytics to GA4 + Cloudflare"* |
 | 3 | *"Rebuilding my blog in public — content audit and what I kept"* |
 
@@ -261,7 +261,7 @@ Node ver:    20
 ### 9.3 Redirects (`_redirects` file)
 
 ```
-# hellodk.io → hellodk.in (handled via Cloudflare domain redirect rules)
+# hellodk.in → hellodk.io (handled via Cloudflare domain redirect rules)
 /rss.xml    /feed.xml    301
 /atom.xml   /feed.xml    301
 /tag/*      /tag/:splat  200
@@ -278,8 +278,8 @@ Every `git push` to a non-master branch gets a unique preview URL from Cloudflar
 | Step | Action |
 |------|--------|
 | 1 | Create Cloudflare Pages project, connect GitHub repo |
-| 2 | Set custom domains: hellodk.in, hellodk.io |
-| 3 | Add redirect rule: hellodk.io → hellodk.in |
+| 2 | Set custom domains: hellodk.io (primary), hellodk.in (redirect) |
+| 3 | Add redirect rule: hellodk.in → hellodk.io |
 | 4 | Remove GitHub Pages CNAME and settings from repo |
 | 5 | Fix CNAME file (currently malformed with `https://` prefix) |
 | 6 | Add `.gitignore` — exclude `.DS_Store`, `_site/`, `dist/`, `node_modules/` |
@@ -288,7 +288,7 @@ Every `git push` to a non-master branch gets a unique preview URL from Cloudflar
 
 ## 11. Enhancements Over Jasper2
 
-| Feature | Jasper2 | New hellodk.in |
+| Feature | Jasper2 | New hellodk.io |
 |---------|---------|----------------|
 | Cover images on cards | ✅ | ✅ |
 | Dark card grid home | ✅ | ✅ |
