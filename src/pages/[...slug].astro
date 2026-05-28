@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { renderEntry } from 'astro/content/runtime';
 import PostLayout from '../layouts/PostLayout.astro';
 import NewsletterCTA from '../components/NewsletterCTA.astro';
 import Giscus from '../components/Giscus.astro';
@@ -15,7 +16,7 @@ export async function getStaticPaths() {
 }
 
 const { post, allPosts } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await renderEntry(post);
 
 const rt = readingTime(post.body ?? '');
 
