@@ -1,0 +1,96 @@
+---
+---
+
+<section class="hero">
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <h1 class="hero__title">
+      Curiosity is the most<br/>powerful thing you own
+    </h1>
+    <p class="hero__bio">
+      Deepak Gupta · DevOps · SRE · Homelab<br/>
+      <span class="hero__bio-detail">
+        Full-time technologist. I write about Kubernetes, observability,
+        fleet management, Linux internals, and occasionally motorcycles.
+      </span>
+    </p>
+    <div class="hero__links">
+      <a href="https://github.com/hellodk" target="_blank" rel="noopener" class="hero__link">
+        GitHub
+      </a>
+      <a href="/newsletter" class="hero__link">
+        Substack
+      </a>
+      <a href="/feed.xml" class="hero__link">
+        RSS
+      </a>
+      <a href="/about" class="hero__link hero__link--primary">
+        About me →
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+.hero {
+  position: relative;
+  background: #0d0d0d;
+  padding: 80px 24px 64px;
+  text-align: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+}
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(229,100,94,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero__content {
+  position: relative;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.hero__title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+.hero__bio {
+  font-size: 1rem;
+  color: #9ba3af;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.hero__bio-detail {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+.hero__links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero__link {
+  color: #9ba3af;
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  transition: all 0.15s;
+}
+.hero__link:hover { color: #ffffff; border-color: #5a5a5a; }
+.hero__link--primary {
+  background: var(--color-accent);
+  color: #ffffff;
+  border-color: var(--color-accent);
+}
+.hero__link--primary:hover { opacity: 0.9; color: #ffffff; }
+</style>
