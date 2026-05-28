@@ -1,0 +1,81 @@
+---
+layout: post
+cover: false
+title: RethinkDb Installation on Ubuntu-14.04
+date:  2016-02-04 10:18:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+Let's get some hands on rethinkdb today and find it out yourself. </br>
+</br>
+So what is rethinkdb?
+</br></br>
+Rethinkdb is an open-source, scalable JSON database built from the ground up for the realtime web.
+</br>RethinkDB inverts the traditional database architecture by exposing an exciting new access model – instead of polling for changes, the developer can tell RethinkDB to continuously push updated query results to applications in realtime. RethinkDB’s realtime push architecture dramatically reduces the time and effort necessary to build scalable realtime apps. RethinkDB also offers a flexible query language, intuitive operations and monitoring APIs, and is easy to setup and learn. Just like any other database solution, rethinkdb ships as a client-server component model. The installation process for both the server and the client are illustrated below:
+
+<p>How to Install RethinkDb:</p>
+1. Add the RethinkDB PPA to your list of repositories : 
+<br></br>
+<code>source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list</code>
+<br></br>
+2. Add the keys:<br></br>
+
+<code>wget -qO- http://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -</code>
+<br></br>
+3. Update the repository:
+<br></br>
+<code>sudo apt-get update</code>
+<br></br>
+4. Install the rethinkdb server via apt-get:
+<br></br>
+<code>sudo apt-get -y install rethinkdb</code>
+<br></br>
+Install rethinkdb client:
+<br></br>
+1. Install the python-pip package:
+<br></br>
+<code>sudo apt-get install python-pip</code>
+<br></br>
+2. Install the rethinkdb python client:
+<br></br>
+<code>sudo pip install rethinkdb</code>
+<br></br>
+The above steps ensure that rethinkdb is installed on the system, while it does not ensures that this will start the rethinkdb service on system startup. You still need to start the rethinkdb service using the below command
+<br></br>
+<code>rethinkdb</code>
+<br></br>
+The above command will ensure that rethinkdb is running as a terminal process, and will exit once the terminal is closed, or the process is killed, in short it will not run rethinkdb as a background service.
+<br></br>
+To start rethinkdb as a service, please follow the below steps:
+<br></br>
+1.  Move to the directory /etc/rethinkdb
+<br></br><code>cd /etc/rethinkdb</code>
+<br></br>
+2. Copy the file to /etc/rethinkdb/instances.d and rename the file as per your requirements ensuring the extension is .conf only. Say for example the file name is rethinkdb1.conf
+<br></br><code>cp default.conf.sample rethinkdb1.conf</code>
+<br></br>
+3. Now open the file /etc/rethinkdb/instances.d/rethinkdb1.conf and modify the paramaters as per your requirements.
+<br></br><code>vim rethinkdb1.conf</code>
+<br></br>
+4. If setting up a cluster, we suggest do change the server-name to somethink like 'rethinkdb-primary' or 'rethinkdb-1' or 'master' or 'slave'. This will ensure that we have a meaningful naming convention for our cluster.
+<br></br>
+5. The default port details are :
+<br></br>
+<code>29015 :</code> Rethinkdb listens for intracluster connections
+</br>
+<code>28015 :</code> Rethinkdb listens for client driver connections
+</br>
+<code>8080  :</code> Rethinkdb listens for administrative HTTP connections
+</br>
+<code>22    :</code> For SSH. The server uses public key authentication.
+</br>
+<code>80    :</code> For HTTP. It is used during the setup process but otherwise redirects to HTTPS.
+</br>
+<code>443   :</code> For HTTPS. An Nginx server sits between RethinkDB and the world and provides basic HTTP authentication and secure HTTPS connections for the web UI
+<br></br>
+</body>
+</html>
