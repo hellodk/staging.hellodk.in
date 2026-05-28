@@ -1,6 +1,5 @@
 ---
-import BaseLayout from './BaseLayout.astro';
-import Nav from '../components/Nav.astro';
+import ChirpingLayout from './ChirpingLayout.astro';
 
 interface Props {
   title: string;
@@ -13,182 +12,67 @@ interface Props {
 }
 
 const { title, description, date, updated, tags, cover, readingTime } = Astro.props;
-const formattedDate = date.toLocaleDateString('en-GB', {
-  day: 'numeric', month: 'long', year: 'numeric'
-});
+const formattedDate = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const crumb = title.length > 45 ? title.slice(0, 45) + '…' : title;
 ---
 
-<BaseLayout
+<ChirpingLayout
   title={`${title} — hellodk.io`}
-  description={description}
-  cover={cover}
+  {description} {cover}
   type="article"
   publishedDate={date}
-  tags={tags}
+  {tags}
+  breadcrumb={crumb}
 >
-  <!-- Post head: cover image or dark solid -->
-  <div class:list={['post-head', cover ? 'post-head--cover' : 'post-head--nocover']}
-       style={cover ? `background-image: url(${cover})` : undefined}>
-    {cover && <div class="post-head__overlay"></div>}
-    <Nav overlay={!!cover} />
-    {!cover && (
-      <header class="post-head__header">
-        <div class="post-head__meta">
-          {tags.slice(0,3).map(tag => (
-            <a href={`/tag/${tag}`} class="tag dark">{tag}</a>
-          ))}
-        </div>
-        <h1 class="post-head__title">{title}</h1>
-        <div class="post-head__byline">
-          <span>Deepak Gupta</span>
-          <span class="sep">·</span>
-          <time datetime={date.toISOString()}>{formattedDate}</time>
-          {readingTime && <><span class="sep">·</span><span>{readingTime} min read</span></>}
-        </div>
-      </header>
-    )}
-  </div>
-
-  <!-- If has cover: show title below the image on white bg -->
-  {cover && (
-    <header class="post-title-block">
-      <div class="post-title-block__inner">
-        <div class="post-title-block__tags">
-          {tags.slice(0,3).map(tag => (
-            <a href={`/tag/${tag}`} class="tag">{tag}</a>
-          ))}
-        </div>
-        <h1 class="post-title-block__title">{title}</h1>
-        <div class="post-title-block__byline">
-          <span>Deepak Gupta</span>
-          <span class="sep">·</span>
-          <time datetime={date.toISOString()}>{formattedDate}</time>
-          {readingTime && <><span class="sep">·</span><span>{readingTime} min read</span></>}
-        </div>
+  <article class="post-art" data-pagefind-body>
+    <header class="post-art__hd">
+      <div class="post-art__tags">
+        {tags.slice(0,4).map(t => <a href={`/tag/${t}`} class="post-art__tag">{t}</a>)}
       </div>
+      <h1 class="post-art__title">{title}</h1>
+      <div class="post-art__byline">
+        <span>Deepak Gupta</span>
+        <span class="s">·</span>
+        <time datetime={date.toISOString()}>{formattedDate}</time>
+        {readingTime && <><span class="s">·</span><span>{readingTime} min read</span></>}
+      </div>
+      {cover && <img src={cover} alt={title} class="post-art__cover" />}
     </header>
-  )}
 
-  <!-- Article body -->
-  <article class="post-content" data-pagefind-body>
-    <slot />
-  </article>
-
-  <slot name="after-prose" />
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <section class="copyright">
-        <a href="/">hellodk.io</a> &copy; {new Date().getFullYear()}
-      </section>
-      <section class="poweredby">
-        <a href="https://github.com/hellodk" target="_blank" rel="noopener">GitHub</a>
-        &nbsp;·&nbsp;<a href="/feed.xml">RSS</a>
-        &nbsp;·&nbsp;<a href="/about">About</a>
-      </section>
+    <div class="post-art__body">
+      <slot />
     </div>
-  </footer>
-</BaseLayout>
+
+    <slot name="after-prose" />
+  </article>
+</ChirpingLayout>
 
 <style>
-/* Cover post head */
-.post-head--cover {
-  position: relative;
-  height: 420px;
-  background: #15171a center center no-repeat;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-}
-.post-head__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-}
+.post-art { max-width: 720px; }
 
-/* No-cover post head — dark header with title */
-.post-head--nocover {
-  background: #15171a;
-  display: flex;
-  flex-direction: column;
-}
-.post-head__header {
-  position: relative;
-  z-index: 1;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 40px 24px 48px;
-  width: 100%;
-}
-.post-head__meta { margin-bottom: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
-.post-head__title {
-  font-family: var(--font-sans);
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  color: #fff;
-  letter-spacing: -0.3px;
-  margin-bottom: 14px;
-}
-.post-head__byline {
-  font-family: var(--font-sans);
-  font-size: 0.825rem;
-  color: rgba(255,255,255,0.65);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.sep { color: rgba(255,255,255,0.3); }
+.post-art__hd { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #dee2e6; }
 
-/* Title block below cover image */
-.post-title-block {
-  background: #fff;
-  border-bottom: 1px solid var(--color-border);
-  padding: 32px 24px;
-}
-.post-title-block__inner {
-  max-width: 700px;
-  margin: 0 auto;
-}
-.post-title-block__tags { margin-bottom: 12px; display: flex; gap: 6px; }
-.post-title-block__title {
-  font-family: var(--font-sans);
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  color: #15171a;
-  margin-bottom: 12px;
-}
-.post-title-block__byline {
-  font-family: var(--font-sans);
-  font-size: 0.825rem;
-  color: #9eabb3;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+.post-art__tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.post-art__tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0066cc; background: #e7f1ff; padding: 2px 8px; border-radius: 3px; text-decoration: none; }
+.post-art__tag:hover { background: #0066cc; color: #fff; }
 
-/* Footer */
-.site-footer {
-  background: #15171a;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding: 24px;
-  text-align: center;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-}
-.site-footer__inner {
-  max-width: 1060px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.site-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
-.site-footer a:hover { color: #fff; }
-.site-footer .copyright, .site-footer .poweredby { color: rgba(255,255,255,0.5); }
+.post-art__title { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 700; line-height: 1.2; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.3px; }
+
+.post-art__byline { font-size: 0.8rem; color: #6c757d; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.s { color: #dee2e6; }
+
+.post-art__cover { width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; margin-top: 20px; display: block; }
+
+/* Serif body */
+.post-art__body { font-family: 'Merriweather', Georgia, serif; font-size: 1rem; line-height: 1.8; color: #212529; }
+.post-art__body h2 { font-family: system-ui, sans-serif; font-size: 1.3rem; font-weight: 700; margin: 2rem 0 0.75rem; color: #1a1a1a; }
+.post-art__body h3 { font-family: system-ui, sans-serif; font-size: 1.1rem; font-weight: 700; margin: 1.75rem 0 0.5rem; }
+.post-art__body p { margin-bottom: 1.4rem; }
+.post-art__body ul, .post-art__body ol { margin: 0 0 1.4rem 1.5rem; }
+.post-art__body li { margin-bottom: 0.4rem; }
+.post-art__body a { color: #0066cc; text-decoration: underline; }
+.post-art__body blockquote { border-left: 3px solid #0066cc; padding: 0.5rem 1rem; margin: 1.5rem 0; color: #6c757d; font-style: italic; background: #f8f9fa; }
+.post-art__body pre { margin: 1.5rem 0; border-radius: 6px; overflow-x: auto; }
+.post-art__body code:not(pre code) { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: #f1f3f5; color: #c0392b; border: 1px solid #dee2e6; padding: 0.1em 0.4em; border-radius: 3px; }
+.post-art__body hr { border: none; border-top: 1px solid #dee2e6; margin: 2rem 0; }
 </style>

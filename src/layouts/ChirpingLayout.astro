@@ -1,0 +1,166 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import LeftSidebar from '../components/chirping/LeftSidebar.astro';
+import RightSidebar from '../components/chirping/RightSidebar.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title?: string;
+  description?: string;
+  cover?: string;
+  type?: 'website' | 'article';
+  publishedDate?: Date;
+  tags?: string[];
+  breadcrumb?: string;
+}
+
+const { title = 'hellodk.io — DevOps, SRE & Homelab', description, cover, type, publishedDate, tags = [], breadcrumb } = Astro.props;
+
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const recentPosts = allPosts.slice(0, 5);
+const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))].sort();
+---
+
+<BaseLayout {title} {description} {cover} {type} {publishedDate} {tags}>
+  <div class="chirp-shell">
+    <aside class="chirp-left" aria-label="Sidebar">
+      <LeftSidebar />
+    </aside>
+
+    <div class="chirp-main-wrap">
+      <header class="chirp-topbar">
+        <nav class="chirp-breadcrumb" aria-label="Breadcrumb">
+          {breadcrumb && (
+            <span>
+              <a href="/">Home</a>
+              <span class="sep">›</span>
+              <span>{breadcrumb}</span>
+            </span>
+          )}
+        </nav>
+        <a href="/search" class="chirp-topbar__search" aria-label="Search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+      </header>
+
+      <nav class="chirp-mobile-nav" aria-label="Mobile navigation">
+        <a href="/" class="chirp-mobile-logo">hello<em>dk</em></a>
+        <div class="chirp-mobile-links" id="mob-links">
+          <a href="/">Blog</a>
+          <a href="/tag/devops">DevOps</a>
+          <a href="/tag/kubernetes">Kubernetes</a>
+          <a href="/about">About</a>
+          <a href="/search">Search</a>
+        </div>
+        <button id="mob-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </nav>
+
+      <main class="chirp-main" id="main"><slot /></main>
+
+      <footer class="chirp-footer">
+        <p>© {new Date().getFullYear()} Deepak Gupta · <a href="/feed.xml">RSS</a> · <a href="/about">About</a></p>
+      </footer>
+    </div>
+
+    <aside class="chirp-right" aria-label="Sidebar widgets">
+      <RightSidebar recentPosts={recentPosts} allTags={allTags} />
+    </aside>
+  </div>
+</BaseLayout>
+
+<script>
+  const burger = document.getElementById('mob-burger');
+  const links = document.getElementById('mob-links');
+  burger?.addEventListener('click', () => links?.classList.toggle('open'));
+</script>
+
+<style>
+.chirp-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr 260px;
+  min-height: 100vh;
+  background: #fff;
+}
+.chirp-left {
+  background: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.chirp-main-wrap { display: flex; flex-direction: column; min-width: 0; }
+.chirp-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  border-bottom: 1px solid #dee2e6;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 44px;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+.chirp-breadcrumb a { color: #0066cc; text-decoration: none; }
+.chirp-breadcrumb a:hover { text-decoration: underline; }
+.sep { margin: 0 6px; color: #adb5bd; }
+.chirp-topbar__search {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 6px;
+  color: #6c757d; border: 1px solid #dee2e6; background: #fff;
+  text-decoration: none; transition: all 0.12s;
+}
+.chirp-topbar__search:hover { background: #f8f9fa; color: #1a1a1a; }
+.chirp-mobile-nav {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 52px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.chirp-mobile-logo { font-weight: 700; font-size: 1.1rem; color: #1a1a1a; text-decoration: none; }
+.chirp-mobile-logo em { color: #e5645e; font-style: normal; }
+.chirp-mobile-links {
+  display: none; position: fixed; top: 52px; left: 0; right: 0;
+  background: #f8f9fa; border-bottom: 1px solid #dee2e6;
+  flex-direction: column; padding: 8px 0; z-index: 100;
+}
+.chirp-mobile-links.open { display: flex; }
+.chirp-mobile-links a { padding: 10px 20px; font-size: 0.9rem; color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #dee2e6; }
+.chirp-mobile-links a:hover { background: #e9ecef; }
+#mob-burger {
+  display: flex; flex-direction: column; gap: 4px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+#mob-burger span { display: block; width: 20px; height: 2px; background: #1a1a1a; border-radius: 2px; }
+.chirp-main { flex: 1; padding: 24px; }
+.chirp-right {
+  background: #f8f9fa;
+  border-left: 1px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.chirp-footer { padding: 20px 24px; border-top: 1px solid #dee2e6; font-size: 0.78rem; color: #6c757d; text-align: center; }
+.chirp-footer a { color: #0066cc; text-decoration: none; }
+
+@media (max-width: 1100px) {
+  .chirp-shell { grid-template-columns: 60px 1fr 220px; }
+}
+@media (max-width: 768px) {
+  .chirp-shell { grid-template-columns: 1fr; }
+  .chirp-left, .chirp-right { display: none; }
+  .chirp-topbar { display: none; }
+  .chirp-mobile-nav { display: flex; }
+}
+</style>

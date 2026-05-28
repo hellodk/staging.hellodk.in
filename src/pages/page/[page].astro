@@ -1,7 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import HomeLayout from '../../layouts/HomeLayout.astro';
-import PostList from '../../components/PostList.astro';
+import ChirpingLayout from '../../layouts/ChirpingLayout.astro';
+import FeaturedPost from '../../components/chirping/FeaturedPost.astro';
+import PostFeed from '../../components/chirping/PostFeed.astro';
 import Pagination from '../../components/Pagination.astro';
 
 export async function getStaticPaths() {
@@ -9,29 +10,24 @@ export async function getStaticPaths() {
   const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
   const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
-
   return Array.from({ length: totalPages }, (_, i) => ({
     params: { page: String(i + 1) },
     props: {
       posts: allPosts.slice(i * POSTS_PER_PAGE, (i + 1) * POSTS_PER_PAGE),
-      currentPage: i + 1,
-      totalPages,
+      currentPage: i + 1, totalPages,
     },
   }));
 }
 
 const { posts, currentPage, totalPages } = Astro.props;
-const mappedPosts = posts.map(post => ({
-  slug: post.id,
-  title: post.data.title,
-  description: post.data.description,
-  date: post.data.date,
-  tags: post.data.tags,
-  cover: post.data.cover,
-}));
+const toPost = (p: typeof posts[0]) => ({
+  slug: p.id, title: p.data.title, description: p.data.description,
+  date: p.data.date, tags: p.data.tags, cover: p.data.cover,
+});
 ---
 
-<HomeLayout title={`hellodk.io — Page ${currentPage}`}>
-  <PostList posts={mappedPosts} />
+<ChirpingLayout title={`hellodk.io — Page ${currentPage}`}>
+  <FeaturedPost post={toPost(posts[0])} />
+  <PostFeed posts={posts.slice(1).map(toPost)} />
   <Pagination currentPage={currentPage} totalPages={totalPages} />
-</HomeLayout>
+</ChirpingLayout>

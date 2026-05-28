@@ -1,0 +1,44 @@
+---
+interface Post { id: string; data: { title: string; date: Date; tags: string[] } }
+interface Props { recentPosts: Post[]; allTags: string[] }
+const { recentPosts, allTags } = Astro.props;
+---
+
+<div class="rsb">
+  <section class="rsb__section">
+    <h3 class="rsb__heading">Recently Updated</h3>
+    <ul class="rsb__list">
+      {recentPosts.map(p => (
+        <li class="rsb__item">
+          <a href={`/${p.id}`} class="rsb__link">{p.data.title}</a>
+          <time class="rsb__date">
+            {p.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+          </time>
+        </li>
+      ))}
+    </ul>
+  </section>
+  <section class="rsb__section">
+    <h3 class="rsb__heading">Trending Tags</h3>
+    <div class="rsb__tags">
+      {allTags.slice(0, 24).map(tag => (
+        <a href={`/tag/${tag}`} class="rsb__tag">{tag}</a>
+      ))}
+    </div>
+  </section>
+</div>
+
+<style>
+.rsb { padding: 16px; }
+.rsb__section { margin-bottom: 28px; }
+.rsb__heading { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6c757d; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #dee2e6; }
+.rsb__list { list-style: none; padding: 0; margin: 0; }
+.rsb__item { padding: 8px 0; border-bottom: 1px solid #f1f3f5; }
+.rsb__item:last-child { border-bottom: none; }
+.rsb__link { display: block; font-size: 0.78rem; color: #1a1a1a; text-decoration: none; line-height: 1.4; margin-bottom: 2px; font-weight: 500; }
+.rsb__link:hover { color: #0066cc; }
+.rsb__date { font-size: 0.7rem; color: #adb5bd; }
+.rsb__tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.rsb__tag { font-size: 0.7rem; font-weight: 500; padding: 3px 9px; background: #e9ecef; color: #495057; border-radius: 20px; text-decoration: none; border: 1px solid #dee2e6; transition: all 0.12s; }
+.rsb__tag:hover { background: #0066cc; color: #fff; border-color: #0066cc; }
+</style>

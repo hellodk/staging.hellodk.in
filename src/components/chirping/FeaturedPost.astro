@@ -1,0 +1,43 @@
+---
+interface Props {
+  post: { slug: string; title: string; description: string; date: Date; tags: string[]; cover?: string }
+}
+const { post } = Astro.props;
+const d = post.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<article class="feat">
+  {post.cover && (
+    <a href={`/${post.slug}`}><img src={post.cover} alt={post.title} class="feat__img" loading="eager" /></a>
+  )}
+  <div class="feat__body">
+    <div class="feat__tags">
+      {post.tags.slice(0,3).map(t => <a href={`/tag/${t}`} class="feat__tag">{t}</a>)}
+    </div>
+    <h2 class="feat__title"><a href={`/${post.slug}`}>{post.title}</a></h2>
+    <p class="feat__desc">{post.description}</p>
+    <footer class="feat__meta">
+      <span>Deepak Gupta</span><span class="dot">·</span>
+      <time datetime={post.date.toISOString()}>{d}</time>
+      <a href={`/${post.slug}`} class="feat__more">Read more →</a>
+    </footer>
+  </div>
+</article>
+
+<style>
+.feat { border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; margin-bottom: 28px; background: #fff; transition: box-shadow 0.2s; }
+.feat:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.feat__img { width: 100%; height: 260px; object-fit: cover; display: block; }
+.feat__body { padding: 20px 24px; }
+.feat__tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.feat__tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0066cc; background: #e7f1ff; padding: 2px 8px; border-radius: 3px; text-decoration: none; }
+.feat__tag:hover { background: #0066cc; color: #fff; }
+.feat__title { font-size: 1.35rem; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+.feat__title a { color: #1a1a1a; text-decoration: none; }
+.feat__title a:hover { color: #0066cc; }
+.feat__desc { font-size: 0.875rem; color: #495057; line-height: 1.6; margin-bottom: 14px; }
+.feat__meta { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #6c757d; }
+.dot { color: #dee2e6; }
+.feat__more { margin-left: auto; color: #0066cc; font-weight: 600; font-size: 0.8rem; text-decoration: none; }
+.feat__more:hover { text-decoration: underline; }
+</style>
