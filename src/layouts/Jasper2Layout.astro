@@ -1,0 +1,173 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  cover?: string;
+  type?: 'website' | 'article';
+  publishedDate?: Date;
+  tags?: string[];
+}
+
+const { title = 'hellodk.io — DevOps, SRE & Homelab', description, cover, type, publishedDate, tags = [] } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<BaseLayout {title} {description} {cover} {type} {publishedDate} {tags}>
+  <div class="j2-site">
+    <!-- Sticky nav -->
+    <nav class="j2-nav" id="j2-nav">
+      <div class="j2-nav__inner">
+        <div class="j2-nav__left">
+          <a href="/" class:list={['j2-nav__link', currentPath === '/' && 'active']}>Blog</a>
+          <a href="/tag/devops" class="j2-nav__link">DevOps</a>
+          <a href="/tag/kubernetes" class="j2-nav__link">Kubernetes</a>
+          <a href="/about" class:list={['j2-nav__link', currentPath === '/about' && 'active']}>About</a>
+        </div>
+        <a href="/" class="j2-nav__logo">hello<em>dk</em></a>
+        <div class="j2-nav__right">
+          <a href="/search" class="j2-nav__link j2-nav__link--icon" aria-label="Search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </a>
+          <a href="https://github.com/hellodk" target="_blank" rel="noopener" class="j2-nav__link j2-nav__link--icon" aria-label="GitHub">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="/newsletter" class="j2-nav__subscribe">Subscribe</a>
+        </div>
+        <button class="j2-nav__burger" id="j2-burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <!-- Mobile dropdown -->
+      <div class="j2-nav__mobile" id="j2-mobile">
+        <a href="/">Blog</a>
+        <a href="/tag/devops">DevOps</a>
+        <a href="/tag/kubernetes">Kubernetes</a>
+        <a href="/about">About</a>
+        <a href="/search">Search</a>
+        <a href="/newsletter">Subscribe</a>
+      </div>
+    </nav>
+
+    <main class="j2-main">
+      <slot />
+    </main>
+
+    <footer class="j2-footer">
+      <div class="j2-footer__inner">
+        <p>© {new Date().getFullYear()} <a href="/">hellodk.io</a> — Built with Astro, hosted on Cloudflare Pages</p>
+        <nav class="j2-footer__links">
+          <a href="/">Blog</a>
+          <a href="/about">About</a>
+          <a href="/feed.xml">RSS</a>
+          <a href="/newsletter">Newsletter</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  const burger = document.getElementById('j2-burger');
+  const mobile = document.getElementById('j2-mobile');
+  burger?.addEventListener('click', () => mobile?.classList.toggle('open'));
+</script>
+
+<style>
+.j2-site { background: #15171a; min-height: 100vh; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+/* NAV */
+.j2-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(21,23,26,0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  height: 56px;
+}
+.j2-nav__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.j2-nav__logo {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.j2-nav__logo em { color: #e5645e; font-style: normal; }
+.j2-nav__left, .j2-nav__right { display: flex; align-items: center; gap: 16px; }
+.j2-nav__link {
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+}
+.j2-nav__link:hover, .j2-nav__link.active { color: #fff; }
+.j2-nav__link--icon { color: rgba(255,255,255,0.5); }
+.j2-nav__subscribe {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 4px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.j2-nav__subscribe:hover { background: rgba(255,255,255,0.1); }
+.j2-nav__burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.j2-nav__burger span { display: block; width: 20px; height: 2px; background: rgba(255,255,255,0.7); border-radius: 2px; }
+.j2-nav__mobile {
+  display: none;
+  flex-direction: column;
+  background: #15171a;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 0;
+}
+.j2-nav__mobile.open { display: flex; }
+.j2-nav__mobile a { padding: 11px 24px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.j2-nav__mobile a:hover { color: #fff; background: rgba(255,255,255,0.04); }
+
+/* MAIN */
+.j2-main { background: #15171a; }
+
+/* FOOTER */
+.j2-footer { background: #09090b; border-top: 1px solid rgba(255,255,255,0.08); padding: 28px 24px; text-align: center; }
+.j2-footer__inner { max-width: 1200px; margin: 0 auto; }
+.j2-footer p { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin-bottom: 10px; }
+.j2-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.j2-footer a:hover { color: #fff; }
+.j2-footer__links { display: flex; justify-content: center; gap: 20px; }
+.j2-footer__links a { font-size: 0.78rem; }
+
+@media (max-width: 768px) {
+  .j2-nav__left, .j2-nav__right { display: none; }
+  .j2-nav__logo { position: static; transform: none; }
+  .j2-nav__burger { display: flex; }
+}
+</style>

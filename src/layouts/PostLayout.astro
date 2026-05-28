@@ -1,5 +1,8 @@
 ---
-import ChirpingLayout from './ChirpingLayout.astro';
+import Jasper2Layout from './Jasper2Layout.astro';
+import J2Card from '../components/jasper2/J2Card.astro';
+import { readingTime } from '../utils/readingTime';
+import { getCollection } from 'astro:content';
 
 interface Props {
   title: string;
@@ -11,68 +14,176 @@ interface Props {
   readingTime?: number;
 }
 
-const { title, description, date, updated, tags, cover, readingTime } = Astro.props;
+const { title, description, date, updated, tags, cover, readingTime: rt } = Astro.props;
+
 const formattedDate = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-const crumb = title.length > 45 ? title.slice(0, 45) + '…' : title;
+
+// Tag gradient for post header bg when no cover
+const tagGradients: Record<string, string> = {
+  kubernetes: 'linear-gradient(135deg, #0d2744 0%, #1a3a6a 100%)',
+  k8s: 'linear-gradient(135deg, #0d2744 0%, #1a3a6a 100%)',
+  linux: 'linear-gradient(135deg, #1a3322 0%, #0d2218 100%)',
+  ubuntu: 'linear-gradient(135deg, #1a3322 0%, #0d2218 100%)',
+  devops: 'linear-gradient(135deg, #2a1a44 0%, #1a0d33 100%)',
+  dns: 'linear-gradient(135deg, #0d3344 0%, #0d2233 100%)',
+  networking: 'linear-gradient(135deg, #0d3344 0%, #0d2233 100%)',
+  security: 'linear-gradient(135deg, #3a1a1a 0%, #2a0d0d 100%)',
+  ssl: 'linear-gradient(135deg, #3a1a1a 0%, #2a0d0d 100%)',
+  'claude-code': 'linear-gradient(135deg, #1a2a44 0%, #0d1a33 100%)',
+  graphify: 'linear-gradient(135deg, #1a2a44 0%, #0d1a33 100%)',
+};
+const primaryTag = tags[0]?.toLowerCase() || '';
+const headerBg = cover
+  ? `background-image: url(${cover}); background-size: cover; background-position: center;`
+  : `background: ${tagGradients[primaryTag] || 'linear-gradient(135deg, #15171a 0%, #2a2a2a 100%)'};`;
+
+// Get related posts
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const related = allPosts
+  .filter(p => p.data.tags.some(t => tags.includes(t)) && p.data.title !== title)
+  .slice(0, 3);
 ---
 
-<ChirpingLayout
+<Jasper2Layout
   title={`${title} — hellodk.io`}
   {description} {cover}
   type="article"
   publishedDate={date}
   {tags}
-  breadcrumb={crumb}
 >
-  <article class="post-art" data-pagefind-body>
-    <header class="post-art__hd">
-      <div class="post-art__tags">
-        {tags.slice(0,4).map(t => <a href={`/tag/${t}`} class="post-art__tag">{t}</a>)}
-      </div>
-      <h1 class="post-art__title">{title}</h1>
-      <div class="post-art__byline">
+  <!-- Post header: full-width image/gradient -->
+  <div class="j2-post-head" style={headerBg}>
+    <div class="j2-post-head__overlay"></div>
+    <div class="j2-post-head__content">
+      {tags.length > 0 && (
+        <a href={`/tag/${tags[0]}`} class="j2-post-head__tag">{tags[0]}</a>
+      )}
+      <h1 class="j2-post-head__title">{title}</h1>
+      <div class="j2-post-head__meta">
         <span>Deepak Gupta</span>
-        <span class="s">·</span>
+        <span class="sep">·</span>
         <time datetime={date.toISOString()}>{formattedDate}</time>
-        {readingTime && <><span class="s">·</span><span>{readingTime} min read</span></>}
+        {rt && <><span class="sep">·</span><span>{rt} min read</span></>}
       </div>
-      {cover && <img src={cover} alt={title} class="post-art__cover" />}
-    </header>
-
-    <div class="post-art__body">
-      <slot />
     </div>
+  </div>
 
-    <slot name="after-prose" />
-  </article>
-</ChirpingLayout>
+  <!-- Post body: white reading area -->
+  <div class="j2-post-body-wrap">
+    <article class="j2-post-body" data-pagefind-body>
+      <slot />
+    </article>
+  </div>
+
+  <slot name="after-prose" />
+
+  <!-- Related posts -->
+  {related.length > 0 && (
+    <section class="j2-related">
+      <div class="j2-related__inner">
+        <h3 class="j2-related__heading">You might also like</h3>
+        <div class="j2-related__grid">
+          {related.map(p => (
+            <J2Card
+              slug={p.id}
+              title={p.data.title}
+              description={p.data.description}
+              date={p.data.date}
+              tags={p.data.tags}
+              cover={p.data.cover}
+              size="normal"
+              readingTime={readingTime(p.body ?? '')}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</Jasper2Layout>
 
 <style>
-.post-art { max-width: 720px; }
+/* Post head */
+.j2-post-head {
+  position: relative;
+  min-height: 55vh;
+  display: flex;
+  align-items: flex-end;
+}
+.j2-post-head__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);
+}
+.j2-post-head__content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 24px 48px;
+  text-align: center;
+}
+.j2-post-head__tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 3px;
+  text-decoration: none;
+  margin-bottom: 16px;
+  backdrop-filter: blur(4px);
+}
+.j2-post-head__tag:hover { background: rgba(255,255,255,0.25); }
+.j2-post-head__title {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  margin-bottom: 18px;
+}
+.j2-post-head__meta {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sep { color: rgba(255,255,255,0.3); }
 
-.post-art__hd { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #dee2e6; }
+/* White reading area */
+.j2-post-body-wrap { background: #fff; padding: 56px 24px 64px; }
+.j2-post-body {
+  max-width: 740px;
+  margin: 0 auto;
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #212529;
+}
+.j2-post-body h2 { font-family: -apple-system, sans-serif; font-size: 1.4rem; font-weight: 700; margin: 2.5rem 0 0.75rem; color: #15171a; }
+.j2-post-body h3 { font-family: -apple-system, sans-serif; font-size: 1.15rem; font-weight: 700; margin: 2rem 0 0.5rem; }
+.j2-post-body p { margin-bottom: 1.5rem; }
+.j2-post-body ul, .j2-post-body ol { margin: 0 0 1.5rem 1.5rem; }
+.j2-post-body li { margin-bottom: 0.4rem; }
+.j2-post-body a { color: #e5645e; text-decoration: underline; }
+.j2-post-body blockquote { border-left: 3px solid #e5645e; padding: 0.5rem 1rem; margin: 1.5rem 0; color: #6c757d; font-style: italic; background: #f9f9f9; }
+.j2-post-body pre { margin: 1.5rem 0; border-radius: 6px; overflow-x: auto; }
+.j2-post-body code:not(pre code) { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: #f1f3f5; color: #c0392b; border: 1px solid #e5e7eb; padding: 0.1em 0.4em; border-radius: 3px; }
+.j2-post-body hr { border: none; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
 
-.post-art__tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-.post-art__tag { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0066cc; background: #e7f1ff; padding: 2px 8px; border-radius: 3px; text-decoration: none; }
-.post-art__tag:hover { background: #0066cc; color: #fff; }
-
-.post-art__title { font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 700; line-height: 1.2; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.3px; }
-
-.post-art__byline { font-size: 0.8rem; color: #6c757d; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.s { color: #dee2e6; }
-
-.post-art__cover { width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; margin-top: 20px; display: block; }
-
-/* Serif body */
-.post-art__body { font-family: 'Merriweather', Georgia, serif; font-size: 1rem; line-height: 1.8; color: #212529; }
-.post-art__body h2 { font-family: system-ui, sans-serif; font-size: 1.3rem; font-weight: 700; margin: 2rem 0 0.75rem; color: #1a1a1a; }
-.post-art__body h3 { font-family: system-ui, sans-serif; font-size: 1.1rem; font-weight: 700; margin: 1.75rem 0 0.5rem; }
-.post-art__body p { margin-bottom: 1.4rem; }
-.post-art__body ul, .post-art__body ol { margin: 0 0 1.4rem 1.5rem; }
-.post-art__body li { margin-bottom: 0.4rem; }
-.post-art__body a { color: #0066cc; text-decoration: underline; }
-.post-art__body blockquote { border-left: 3px solid #0066cc; padding: 0.5rem 1rem; margin: 1.5rem 0; color: #6c757d; font-style: italic; background: #f8f9fa; }
-.post-art__body pre { margin: 1.5rem 0; border-radius: 6px; overflow-x: auto; }
-.post-art__body code:not(pre code) { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: #f1f3f5; color: #c0392b; border: 1px solid #dee2e6; padding: 0.1em 0.4em; border-radius: 3px; }
-.post-art__body hr { border: none; border-top: 1px solid #dee2e6; margin: 2rem 0; }
+/* Related posts */
+.j2-related { background: #15171a; padding: 48px 24px; }
+.j2-related__inner { max-width: 1200px; margin: 0 auto; }
+.j2-related__heading { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+.j2-related__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+@media (max-width: 768px) { .j2-related__grid { grid-template-columns: 1fr; } }
 </style>

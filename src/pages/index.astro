@@ -1,23 +1,25 @@
 ---
 import { getCollection } from 'astro:content';
-import ChirpingLayout from '../layouts/ChirpingLayout.astro';
-import FeaturedPost from '../components/chirping/FeaturedPost.astro';
-import PostFeed from '../components/chirping/PostFeed.astro';
+import Jasper2Layout from '../layouts/Jasper2Layout.astro';
+import J2Hero from '../components/jasper2/J2Hero.astro';
+import J2Grid from '../components/jasper2/J2Grid.astro';
 import Pagination from '../components/Pagination.astro';
 
-const POSTS_PER_PAGE = 10;
+const POSTS_PER_PAGE = 14;
 const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
 const pagePosts = allPosts.slice(0, POSTS_PER_PAGE);
-const toPost = (p: typeof allPosts[0]) => ({
-  slug: p.id, title: p.data.title, description: p.data.description,
-  date: p.data.date, tags: p.data.tags, cover: p.data.cover,
-});
 ---
 
-<ChirpingLayout>
-  <FeaturedPost post={toPost(pagePosts[0])} />
-  <PostFeed posts={pagePosts.slice(1).map(toPost)} />
-  <Pagination currentPage={1} totalPages={totalPages} />
-</ChirpingLayout>
+<Jasper2Layout>
+  <J2Hero posts={pagePosts.slice(0, 2)} />
+  <J2Grid posts={pagePosts.slice(2)} />
+  <div class="j2-pagination">
+    <Pagination currentPage={1} totalPages={totalPages} />
+  </div>
+</Jasper2Layout>
+
+<style>
+.j2-pagination { padding: 40px 24px; }
+</style>

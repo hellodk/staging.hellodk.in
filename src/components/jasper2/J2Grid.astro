@@ -1,0 +1,67 @@
+---
+import J2Card from './J2Card.astro';
+import { readingTime } from '../../utils/readingTime';
+
+interface Post {
+  id: string;
+  data: { title: string; description: string; date: Date; tags: string[]; cover?: string };
+  body?: string;
+}
+
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+
+// Assign sizes in repeating pattern: 3 normal → 1 large + 1 normal → 3 normal → 1 normal + 1 large
+function assignSizes(posts: Post[]) {
+  return posts.map((p, i) => {
+    const pos = i % 5;
+    // Pattern: 0,1,2 = normal | 3 = large | 4 = normal → then repeat
+    const size = (pos === 3) ? 'large' : 'normal';
+    return { post: p, size: size as 'large' | 'normal' };
+  });
+}
+
+const toCard = (p: Post, size: 'large' | 'normal') => ({
+  slug: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  date: p.data.date,
+  tags: p.data.tags,
+  cover: p.data.cover,
+  size,
+  readingTime: readingTime(p.body ?? ''),
+});
+
+const sized = assignSizes(posts);
+---
+
+<section class="j2-grid">
+  <div class="j2-grid__inner">
+    {sized.map(({ post, size }) => (
+      <div class:list={['j2-grid__item', size === 'large' && 'j2-grid__item--large']}>
+        <J2Card {...toCard(post, size)} />
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+.j2-grid { padding: 4px 0; }
+.j2-grid__inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.j2-grid__item--large {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .j2-grid__inner { grid-template-columns: repeat(2, 1fr); }
+  .j2-grid__item--large { grid-column: span 2; }
+}
+@media (max-width: 600px) {
+  .j2-grid__inner { grid-template-columns: 1fr; }
+  .j2-grid__item--large { grid-column: span 1; }
+}
+</style>

@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import ChirpingLayout from '../../layouts/ChirpingLayout.astro';
-import PostFeed from '../../components/chirping/PostFeed.astro';
+import Jasper2Layout from '../../layouts/Jasper2Layout.astro';
+import J2Grid from '../../components/jasper2/J2Grid.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -10,28 +10,30 @@ export async function getStaticPaths() {
     params: { tag },
     props: {
       tag,
-      posts: posts.filter(p => p.data.tags.includes(tag)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+      posts: posts.filter(p => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
     },
   }));
 }
 
 const { tag, posts } = Astro.props;
-const toPost = (p: typeof posts[0]) => ({
-  slug: p.id, title: p.data.title, description: p.data.description,
-  date: p.data.date, tags: p.data.tags, cover: p.data.cover,
-});
 ---
 
-<ChirpingLayout title={`#${tag} — hellodk.io`} breadcrumb={`#${tag}`}>
-  <header class="tag-head">
-    <h1 class="tag-head__title">#{tag}</h1>
-    <p class="tag-head__count">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
-  </header>
-  <PostFeed posts={posts.map(toPost)} />
-</ChirpingLayout>
+<Jasper2Layout title={`#${tag} — hellodk.io`}>
+  <div class="j2-tag-hero">
+    <div class="j2-tag-hero__inner">
+      <span class="j2-tag-hero__label">{tag}</span>
+      <h1 class="j2-tag-hero__title">#{tag}</h1>
+      <p class="j2-tag-hero__count">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+    </div>
+  </div>
+  <J2Grid posts={posts} />
+</Jasper2Layout>
 
 <style>
-.tag-head { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #dee2e6; }
-.tag-head__title { font-size: 1.5rem; font-weight: 700; color: #e5645e; }
-.tag-head__count { font-size: 0.82rem; color: #6c757d; margin-top: 4px; }
+.j2-tag-hero { background: #09090b; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 48px 24px; text-align: center; }
+.j2-tag-hero__inner { max-width: 480px; margin: 0 auto; }
+.j2-tag-hero__label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #e5645e; }
+.j2-tag-hero__title { font-size: 2rem; font-weight: 700; color: #fff; margin: 8px 0 6px; }
+.j2-tag-hero__count { font-size: 0.875rem; color: rgba(255,255,255,0.5); }
 </style>

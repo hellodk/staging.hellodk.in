@@ -1,33 +1,28 @@
 ---
 import { getCollection } from 'astro:content';
-import ChirpingLayout from '../../layouts/ChirpingLayout.astro';
-import FeaturedPost from '../../components/chirping/FeaturedPost.astro';
-import PostFeed from '../../components/chirping/PostFeed.astro';
+import Jasper2Layout from '../../layouts/Jasper2Layout.astro';
+import J2Hero from '../../components/jasper2/J2Hero.astro';
+import J2Grid from '../../components/jasper2/J2Grid.astro';
 import Pagination from '../../components/Pagination.astro';
 
 export async function getStaticPaths() {
-  const POSTS_PER_PAGE = 10;
+  const POSTS_PER_PAGE = 14;
   const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
   const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
   return Array.from({ length: totalPages }, (_, i) => ({
     params: { page: String(i + 1) },
-    props: {
-      posts: allPosts.slice(i * POSTS_PER_PAGE, (i + 1) * POSTS_PER_PAGE),
-      currentPage: i + 1, totalPages,
-    },
+    props: { posts: allPosts.slice(i * POSTS_PER_PAGE, (i + 1) * POSTS_PER_PAGE), currentPage: i + 1, totalPages },
   }));
 }
 
 const { posts, currentPage, totalPages } = Astro.props;
-const toPost = (p: typeof posts[0]) => ({
-  slug: p.id, title: p.data.title, description: p.data.description,
-  date: p.data.date, tags: p.data.tags, cover: p.data.cover,
-});
 ---
 
-<ChirpingLayout title={`hellodk.io — Page ${currentPage}`}>
-  <FeaturedPost post={toPost(posts[0])} />
-  <PostFeed posts={posts.slice(1).map(toPost)} />
-  <Pagination currentPage={currentPage} totalPages={totalPages} />
-</ChirpingLayout>
+<Jasper2Layout title={`hellodk.io — Page ${currentPage}`}>
+  <J2Hero posts={posts.slice(0,2)} />
+  <J2Grid posts={posts.slice(2)} />
+  <div style="padding:40px 24px;">
+    <Pagination currentPage={currentPage} totalPages={totalPages} />
+  </div>
+</Jasper2Layout>

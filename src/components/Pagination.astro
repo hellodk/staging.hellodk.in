@@ -47,4 +47,17 @@ const next = currentPage < totalPages ? `${base}/${currentPage + 1}` : null;
 a.pagination__btn:hover { color: #15171a; border-color: #15171a; }
 .pagination__btn--disabled { opacity: 0.3; cursor: default; }
 .pagination__info { font-family: var(--font-sans); font-size: 0.8rem; color: #9eabb3; }
+
+/* Dark theme overrides for Jasper2 */
+:global(.j2-site) .pagination__btn {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+}
+:global(.j2-site) a.pagination__btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+}
+:global(.j2-site) .pagination__info { color: rgba(255,255,255,0.4); }
 </style>

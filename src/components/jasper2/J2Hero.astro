@@ -1,0 +1,59 @@
+---
+import J2Card from './J2Card.astro';
+import { readingTime } from '../../utils/readingTime';
+
+interface Post {
+  id: string;
+  data: { title: string; description: string; date: Date; tags: string[]; cover?: string };
+  body?: string;
+}
+
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+
+const featured = posts[0];
+const sidebar = posts[1];
+
+const toCard = (p: Post, size: 'featured' | 'large' | 'normal' | 'small') => ({
+  slug: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  date: p.data.date,
+  tags: p.data.tags,
+  cover: p.data.cover,
+  size,
+  readingTime: readingTime(p.body ?? ''),
+});
+---
+
+<section class="j2-hero">
+  <div class="j2-hero__inner">
+    {featured && (
+      <div class="j2-hero__featured">
+        <J2Card {...toCard(featured, 'featured')} />
+      </div>
+    )}
+    {sidebar && (
+      <div class="j2-hero__sidebar">
+        <J2Card {...toCard(sidebar, 'large')} />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+.j2-hero { padding: 0; }
+.j2-hero__inner {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 4px;
+  height: 500px;
+}
+.j2-hero__featured { min-width: 0; }
+.j2-hero__sidebar { display: flex; flex-direction: column; gap: 4px; }
+
+@media (max-width: 900px) {
+  .j2-hero__inner { grid-template-columns: 1fr; height: auto; }
+  .j2-hero__sidebar { display: none; }
+}
+</style>
