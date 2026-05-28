@@ -1,0 +1,3 @@
+# Legacy Jekyll URL patterns
+/rss.xml       /feed.xml       301
+/atom.xml      /feed.xml       301
