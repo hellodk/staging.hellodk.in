@@ -15,7 +15,8 @@ const { title = 'hellodk.io — DevOps, SRE & Homelab' } = Astro.props;
     <Nav overlay={true} />
     <div class="site-head__content">
       <a class="site-head__logo" href="/">hello<em>dk</em></a>
-      <h2 class="site-head__tagline">DevOps · SRE · Homelab · Linux internals</h2>
+      <p class="site-head__quote">Curiosity is the most powerful thing you own</p>
+      <h2 class="site-head__tagline">Deepak Gupta · DevOps · SRE · Homelab</h2>
     </div>
   </div>
 
@@ -80,12 +81,22 @@ const { title = 'hellodk.io — DevOps, SRE & Homelab' } = Astro.props;
   margin-bottom: 12px;
 }
 .site-head__logo em { color: var(--color-accent); font-style: normal; }
+.site-head__quote {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 10px;
+  letter-spacing: 0.2px;
+}
 .site-head__tagline {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 400;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255,255,255,0.6);
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 /* Post list area */

@@ -114,7 +114,7 @@ const currentPath = Astro.url.pathname;
   .nav__burger { display: flex; }
   .nav__links {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 56px;
     left: 0;
     right: 0;
@@ -124,7 +124,7 @@ const currentPath = Astro.url.pathname;
     align-items: flex-start;
     gap: 0;
     padding: 8px 0;
-    z-index: 99;
+    z-index: 999;
   }
   .nav__links--open { display: flex; }
   .nav__link {
