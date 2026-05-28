@@ -1,0 +1,78 @@
+---
+interface Props {
+  transparent?: boolean;
+}
+const { transparent = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<nav class:list={['nav', transparent && 'nav--transparent']}>
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">
+      <span class="nav__logo-text">hello<em>dk</em></span>
+    </a>
+    <div class="nav__links">
+      <a href="/" class:list={['nav__link', currentPath === '/' && 'nav__link--active']}>Blog</a>
+      <a href="/tag/devops" class="nav__link">DevOps</a>
+      <a href="/tag/kubernetes" class="nav__link">Kubernetes</a>
+      <a href="/about" class:list={['nav__link', currentPath === '/about' && 'nav__link--active']}>About</a>
+      <a href="/newsletter" class="nav__link">Newsletter</a>
+      <a href="/search" class="nav__link nav__link--icon" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </a>
+      <a href="https://github.com/hellodk" class="nav__link nav__link--icon" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<style>
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #111111;
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(8px);
+}
+.nav--transparent {
+  position: absolute;
+  width: 100%;
+  background: transparent;
+  border-bottom: none;
+}
+.nav__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav__logo { text-decoration: none; }
+.nav__logo-text {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+.nav__logo-text em { color: var(--color-accent); font-style: normal; }
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.nav__link {
+  color: #9ba3af;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+}
+.nav__link:hover, .nav__link--active { color: #ffffff; }
+.nav__link--icon { color: #9ba3af; }
+</style>
