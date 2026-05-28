@@ -1,7 +1,7 @@
 ---
-title: "Dns Explained"
+title: "DNS Explained"
 date: 2020-05-09
-description: "Dns Explained"
+description: "A plain-language walkthrough of how DNS works — from query to resolution."
 tags: [networking, dns, devops]
 draft: false
 ---

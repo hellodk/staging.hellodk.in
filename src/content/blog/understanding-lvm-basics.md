@@ -1,7 +1,7 @@
 ---
-title: "Understanding Lvm Basics"
+title: "Understanding LVM Basics on Linux"
 date: 2017-08-21
-description: "Understanding Lvm Basics"
+description: "A practical introduction to LVM — physical volumes, volume groups, logical volumes, and how to manage them."
 tags: [linux, storage, lvm]
 draft: false
 ---

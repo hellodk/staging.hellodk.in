@@ -1,7 +1,7 @@
 ---
-title: "Sins Committed with EKS"
+title: "The Sins We Committed with EKS"
 date: 2021-01-01
-description: "Sins Committed with EKS"
+description: "Hard lessons from running production workloads on Amazon EKS — what went wrong and what we would do differently."
 tags: [devops, tutorials]
 cover: "assets/images/travel/cover.jpg"
 draft: false

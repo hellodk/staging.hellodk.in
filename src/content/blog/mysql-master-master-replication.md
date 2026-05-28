@@ -1,7 +1,7 @@
 ---
-title: "Mysql Master Master Replication"
+title: "MySQL Master-Master Replication"
 date: 2017-06-21
-description: "Mysql Master Master Replication"
+description: "Setting up MySQL master-master replication — the configuration, the caveats, and what to watch out for."
 tags: [mysql, databases, replication]
 draft: false
 ---

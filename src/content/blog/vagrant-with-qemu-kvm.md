@@ -1,7 +1,7 @@
 ---
-title: "Vagrant With Qemu Kvm"
+title: "Vagrant with QEMU/KVM on Linux"
 date: 2020-05-29
-description: "Vagrant With Qemu Kvm"
+description: "How to use Vagrant with the QEMU/KVM provider instead of VirtualBox for faster local VMs on Linux."
 tags: [vagrant, virtualization, linux]
 draft: false
 ---

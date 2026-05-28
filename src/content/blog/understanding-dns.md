@@ -1,7 +1,7 @@
 ---
-title: "Understanding Dns"
+title: "Understanding DNS Records (A, CNAME, MX, TXT)"
 date: 2017-12-13
-description: "Understanding Dns"
+description: "A clear breakdown of the most important DNS record types and when to use each one."
 tags: [linux, networking, dns]
 draft: false
 ---

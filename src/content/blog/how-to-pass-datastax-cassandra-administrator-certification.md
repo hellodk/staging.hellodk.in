@@ -1,7 +1,7 @@
 ---
-title: "Kubernetes Cluster on Vagrant"
+title: "How to Pass the DataStax Cassandra Administrator Certification"
 date: 2016-02-04
-description: "Kubernetes Cluster on Vagrant"
+description: "Study tips, exam breakdown, and what actually matters when preparing for the DataStax Cassandra admin cert."
 tags: [tutorials]
 cover: "assets/images/kubernetes/kubernetes_logo.png"
 draft: false

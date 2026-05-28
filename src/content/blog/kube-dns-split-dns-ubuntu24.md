@@ -1,7 +1,7 @@
 ---
-title: "Kube Dns Split Dns Ubuntu24"
+title: "Kubernetes Split DNS on Ubuntu 24.04"
 date: 2026-05-01
-description: "Kube Dns Split Dns Ubuntu24"
+description: "How to configure split DNS for Kubernetes on Ubuntu 24.04 so cluster and external domains both resolve cleanly."
 tags: [kubernetes, dns, ubuntu]
 draft: false
 ---

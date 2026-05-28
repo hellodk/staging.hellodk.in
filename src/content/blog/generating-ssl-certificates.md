@@ -1,7 +1,7 @@
 ---
-title: "Generating Ssl Certificates"
+title: "Generating SSL Certificates"
 date: 2020-05-08
-description: "Generating Ssl Certificates"
+description: "Step-by-step guide to generating self-signed and CA-signed SSL certificates on Linux."
 tags: [ssl, certificates, security]
 draft: false
 ---

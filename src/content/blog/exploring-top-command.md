@@ -1,7 +1,7 @@
 ---
-title: "Exploring Top Command"
+title: "Exploring the Linux top Command"
 date: 2020-06-01
-description: "Exploring Top Command"
+description: "A practical guide to reading and using the top command for Linux performance monitoring."
 tags: [linux, performance, monitoring]
 draft: false
 ---

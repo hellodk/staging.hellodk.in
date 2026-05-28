@@ -1,5 +1,5 @@
 ---
-title: "5 interesting cloud predictions for 2016"
+title: "5 Interesting Cloud Predictions for 2016"
 date: 2016-01-28
 description: "5 interesting cloud predictions for 2016"
 tags: [tutorials, cloud, predictions, 2016, year, hellodk]

@@ -1,7 +1,7 @@
 ---
-title: "tutotials"
+title: "Creating a Let's Encrypt SSL Certificate"
 date: 2015-12-28
-description: "tutotials"
+description: "Step-by-step guide to getting a free SSL certificate from Let's Encrypt using certbot."
 tags: [about]
 cover: "assets/images/utilities/IMG_75751.JPG"
 draft: false

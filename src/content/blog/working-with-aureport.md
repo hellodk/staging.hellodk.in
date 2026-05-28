@@ -1,7 +1,7 @@
 ---
-title: "Working With Aureport"
+title: "Working with aureport — Linux Audit Log Analysis"
 date: 2020-03-20
-description: "Working With Aureport"
+description: "How to use aureport to summarise and query the Linux audit daemon logs for security analysis."
 tags: [linux, security, audit]
 draft: false
 ---

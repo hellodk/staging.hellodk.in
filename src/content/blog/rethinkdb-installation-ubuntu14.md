@@ -1,5 +1,5 @@
 ---
-title: "RethinkDb Installation on Ubuntu-14.04"
+title: "RethinkDB Installation on Ubuntu 14.04"
 date: 2016-02-04
 description: "RethinkDb Installation on Ubuntu-14.04"
 tags: [tutorials]
