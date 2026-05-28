@@ -5,16 +5,18 @@ import NewsletterCTA from '../components/NewsletterCTA.astro';
 ---
 
 <BaseLayout title="Newsletter — hellodk.io" description="Subscribe to the hellodk.io newsletter — DevOps, SRE, and homelab deep-dives.">
-  <div style="min-height:100vh;background:#0d0d0d;">
+  <div style="min-height:100vh;background:#15171a;">
     <Nav />
-    <div style="max-width:680px;margin:0 auto;padding:64px 24px;text-align:center;">
-      <h1 style="font-size:2rem;font-weight:700;margin-bottom:12px;">Newsletter</h1>
-      <p style="color:#9ba3af;margin-bottom:32px;">
-        DevOps deep-dives, homelab stories, debugging war stories, and tools worth knowing about.
-        No spam. Sent when something is actually worth reading.
-      </p>
-      <a href="https://substack.com/@hellodk" target="_blank" rel="noopener" style="display:inline-block;background:var(--color-accent);color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none;font-weight:600;margin-bottom:32px;">Follow on Substack →</a>
+    <div style="background:#ffffff;min-height:calc(100vh - 56px);">
+      <div style="max-width:700px;margin:0 auto;padding:64px 24px;text-align:center;">
+        <h1 style="font-size:2rem;font-weight:700;margin-bottom:12px;font-family:var(--font-sans);color:#15171a;">Newsletter</h1>
+        <p style="color:#5d6d76;margin-bottom:32px;font-family:var(--font-sans);">
+          DevOps deep-dives, homelab stories, debugging war stories, and tools worth knowing about.
+          No spam. Sent when something is actually worth reading.
+        </p>
+        <a href="https://substack.com/@hellodk" target="_blank" rel="noopener" style="display:inline-block;background:var(--color-accent);color:#fff;padding:10px 24px;border-radius:4px;text-decoration:none;font-weight:600;margin-bottom:32px;font-family:var(--font-sans);">Follow on Substack →</a>
+      </div>
+      <NewsletterCTA title="Get hellodk in your inbox" subtitle="DevOps deep-dives, homelab stories, and debugging war stories. No spam — sent when something is worth reading." />
     </div>
-    <NewsletterCTA title="Get hellodk in your inbox" subtitle="DevOps deep-dives, homelab stories, and debugging war stories. No spam — sent when something is worth reading." />
   </div>
 </BaseLayout>

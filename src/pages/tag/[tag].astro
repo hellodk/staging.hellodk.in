@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import HomeLayout from '../../layouts/HomeLayout.astro';
-import PostGrid from '../../components/PostGrid.astro';
+import PostList from '../../components/PostList.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -34,17 +34,27 @@ const mappedPosts = posts.map(p => ({
     <h1 class="tag-hero__title">#{tag}</h1>
     <p class="tag-hero__count">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
   </div>
-  <PostGrid posts={mappedPosts} />
+  <PostList posts={mappedPosts} />
 </HomeLayout>
 
 <style>
 .tag-hero {
-  max-width: 1200px;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 32px 24px 0;
+  padding: 32px 0 24px;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: 24px;
+  margin-bottom: 0;
 }
-.tag-hero__title { font-size: 1.8rem; font-weight: 700; color: var(--color-accent); }
-.tag-hero__count { font-size: 0.875rem; color: var(--color-text-muted); margin-top: 4px; }
+.tag-hero__title {
+  font-family: var(--font-sans);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+.tag-hero__count {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: #9eabb3;
+  margin-top: 4px;
+}
 </style>

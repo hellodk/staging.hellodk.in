@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import HomeLayout from '../../layouts/HomeLayout.astro';
-import PostGrid from '../../components/PostGrid.astro';
+import PostList from '../../components/PostList.astro';
 import Pagination from '../../components/Pagination.astro';
 
 export async function getStaticPaths() {
-  const POSTS_PER_PAGE = 12;
+  const POSTS_PER_PAGE = 10;
   const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
   const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
@@ -32,6 +32,6 @@ const mappedPosts = posts.map(post => ({
 ---
 
 <HomeLayout title={`hellodk.io — Page ${currentPage}`}>
-  <PostGrid posts={mappedPosts} />
+  <PostList posts={mappedPosts} />
   <Pagination currentPage={currentPage} totalPages={totalPages} />
 </HomeLayout>

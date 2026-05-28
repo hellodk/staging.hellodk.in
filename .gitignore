@@ -13,3 +13,4 @@ modernized_blog/
 *.jpg
 *.jpeg
 !public/images/**
+!public/assets/images/**

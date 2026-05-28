@@ -4,11 +4,13 @@ import Nav from '../components/Nav.astro';
 ---
 
 <BaseLayout title="Search — hellodk.io">
-  <div style="min-height:100vh;background:#0d0d0d;">
+  <div style="min-height:100vh;background:#15171a;">
     <Nav />
-    <div style="max-width:720px;margin:0 auto;padding:48px 24px;">
-      <h1 style="font-size:1.6rem;font-weight:700;margin-bottom:24px;">Search</h1>
-      <div id="search"></div>
+    <div style="background:#ffffff;min-height:calc(100vh - 56px);">
+      <div style="max-width:700px;margin:0 auto;padding:48px 24px;">
+        <h1 style="font-size:1.6rem;font-weight:700;margin-bottom:24px;font-family:var(--font-sans);color:#15171a;">Search</h1>
+        <div id="search"></div>
+      </div>
     </div>
   </div>
 </BaseLayout>
@@ -28,9 +30,9 @@ import Nav from '../components/Nav.astro';
 <style>
   :root {
     --pagefind-ui-primary: #e5645e;
-    --pagefind-ui-background: #1a1a1a;
-    --pagefind-ui-border: #2d2d2d;
-    --pagefind-ui-text: #e6edf3;
+    --pagefind-ui-background: #ffffff;
+    --pagefind-ui-border: #e7eef2;
+    --pagefind-ui-text: #3a4145;
     --pagefind-ui-scale: 0.9;
   }
 </style>

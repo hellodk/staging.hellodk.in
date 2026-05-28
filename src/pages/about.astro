@@ -40,38 +40,69 @@ import NewsletterCTA from '../components/NewsletterCTA.astro';
     <NewsletterCTA />
     <footer class="site-footer">
       <div class="site-footer__inner">
-        <div class="site-footer__links">
-          <a href="/">hellodk.io</a>
+        <section class="copyright">
+          <a href="/">hellodk.io</a> &copy; {new Date().getFullYear()}
+        </section>
+        <section class="poweredby">
           <a href="https://github.com/hellodk" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;·&nbsp;
           <a href="/newsletter">Newsletter</a>
+          &nbsp;·&nbsp;
           <a href="/feed.xml">RSS</a>
-        </div>
-        <p>© {new Date().getFullYear()} Deepak Gupta</p>
+        </section>
       </div>
     </footer>
   </div>
 </BaseLayout>
 
 <style>
-.about-page { min-height: 100vh; background: #0d0d0d; }
+.about-page { min-height: 100vh; background: #15171a; }
 .about-main { background: #ffffff; padding: 64px 24px; min-height: calc(100vh - 56px); }
 .about-content {
-  max-width: 680px;
+  max-width: 700px;
   margin: 0 auto;
-  color: #1a1a1a;
+  color: #3a4145;
+  font-family: var(--font-serif);
   font-size: 1rem;
   line-height: 1.8;
 }
-.about-content h1 { font-size: 2rem; font-weight: 700; margin-bottom: 24px; color: #111; }
-.about-content h2 { font-size: 1.3rem; font-weight: 600; margin: 2rem 0 1rem; color: #111; }
+.about-content h1 {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #15171a;
+}
+.about-content h2 {
+  font-family: var(--font-sans);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  color: #15171a;
+}
 .about-content p { margin-bottom: 1.4rem; }
 .about-content ul { margin: 0 0 1.4rem 1.5rem; }
 .about-content li { margin-bottom: 0.5rem; }
 .about-content a { color: var(--color-accent); }
-.site-footer { background:#0d0d0d; border-top:1px solid var(--color-border); padding:28px 24px; text-align:center; }
-.site-footer__inner { max-width:1200px; margin:0 auto; }
-.site-footer__links { display:flex; justify-content:center; gap:20px; margin-bottom:10px; flex-wrap:wrap; }
-.site-footer__links a { color:var(--color-text-muted); text-decoration:none; font-size:0.85rem; }
-.site-footer__links a:hover { color:#ffffff; }
-.site-footer p { color:var(--color-text-muted); font-size:0.78rem; }
+
+/* Footer */
+.site-footer {
+  background: #15171a;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+}
+.site-footer__inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.site-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.site-footer a:hover { color: #fff; }
+.site-footer .copyright, .site-footer .poweredby { color: rgba(255,255,255,0.5); }
 </style>
