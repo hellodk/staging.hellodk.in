@@ -1,0 +1,48 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  base?: string;
+}
+
+const { currentPage, totalPages, base = '/page' } = Astro.props;
+const prev = currentPage > 1 ? (currentPage === 2 ? '/' : `${base}/${currentPage - 1}`) : null;
+const next = currentPage < totalPages ? `${base}/${currentPage + 1}` : null;
+---
+
+{totalPages > 1 && (
+  <nav class="pagination" aria-label="Page navigation">
+    {prev
+      ? <a href={prev} class="pagination__btn">← Newer</a>
+      : <span class="pagination__btn pagination__btn--disabled">← Newer</span>
+    }
+    <span class="pagination__info">Page {currentPage} of {totalPages}</span>
+    {next
+      ? <a href={next} class="pagination__btn">Older →</a>
+      : <span class="pagination__btn pagination__btn--disabled">Older →</span>
+    }
+  </nav>
+)}
+
+<style>
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px 64px;
+}
+.pagination__btn {
+  color: #9ba3af;
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 8px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg-card);
+  transition: all 0.15s;
+}
+a.pagination__btn:hover { color: #ffffff; border-color: var(--color-accent); }
+.pagination__btn--disabled { opacity: 0.3; cursor: default; }
+.pagination__info { font-size: 0.82rem; color: var(--color-text-muted); }
+</style>

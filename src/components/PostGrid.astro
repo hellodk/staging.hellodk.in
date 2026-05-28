@@ -1,0 +1,47 @@
+---
+import PostCard from './PostCard.astro';
+
+interface Post {
+  slug: string;
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+  cover?: string;
+  readingTime?: number;
+}
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+
+<section class="grid">
+  {posts.map(post => (
+    <PostCard
+      slug={post.slug}
+      title={post.title}
+      description={post.description}
+      date={post.date}
+      tags={post.tags}
+      cover={post.cover}
+      readingTime={post.readingTime}
+    />
+  ))}
+</section>
+
+<style>
+.grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
