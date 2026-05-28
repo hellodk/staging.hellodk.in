@@ -1,1 +1,100 @@
 @import "tailwindcss";
+
+:root {
+  /* Jasper2 / Ghost Casper palette */
+  --color-bg-dark:    #111111;
+  --color-bg-card:    #1a1a1a;
+  --color-bg-post:    #ffffff;
+  --color-text-dark:  #ffffff;
+  --color-text-post:  #1a1a1a;
+  --color-text-muted: #9ba3af;
+  --color-accent:     #e5645e;
+  --color-border:     #2d2d2d;
+  --color-tag-bg:     #2a2a2a;
+  --color-tag-text:   #e5645e;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg-dark);
+  color: var(--color-text-dark);
+  line-height: 1.7;
+}
+
+/* Post reading area overrides */
+.post-body {
+  color: var(--color-text-post);
+  background: var(--color-bg-post);
+}
+
+/* Code blocks */
+pre {
+  border-radius: 8px;
+  padding: 1.25rem !important;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: #2d2d2d;
+  color: #e6edf3;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+/* Prose styles for article body */
+.prose {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--color-text-post);
+}
+.prose h2 { font-size: 1.5rem; font-weight: 700; margin: 2.5rem 0 1rem; line-height: 1.3; }
+.prose h3 { font-size: 1.2rem; font-weight: 600; margin: 2rem 0 0.75rem; }
+.prose p  { margin-bottom: 1.5rem; }
+.prose ul, .prose ol { margin: 0 0 1.5rem 1.5rem; }
+.prose li { margin-bottom: 0.4rem; }
+.prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding: 0.75rem 1rem;
+  margin: 1.5rem 0;
+  background: #f9fafb;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+  color: #4b5563;
+}
+.prose pre { margin: 1.5rem 0; }
+.prose a { color: var(--color-accent); text-decoration: underline; }
+.prose a:hover { opacity: 0.8; }
+.prose hr { border: none; border-top: 1px solid #e5e7eb; margin: 2.5rem 0; }
+
+/* Tag chips */
+.tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--color-tag-bg);
+  color: var(--color-tag-text);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.tag:hover { border-color: var(--color-accent); }
+.tag.light { background: #fef2f2; color: var(--color-accent); }
