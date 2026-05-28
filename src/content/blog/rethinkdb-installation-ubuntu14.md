@@ -4,7 +4,7 @@ date: 2016-02-04
 description: "RethinkDb Installation on Ubuntu-14.04"
 tags: [tutorials]
 cover: "assets/images/rethinkdb/rethinkdb3.png"
-draft: false
+draft: true
 ---
 
 Let's get some hands on rethinkdb today and find it out yourself. </br>

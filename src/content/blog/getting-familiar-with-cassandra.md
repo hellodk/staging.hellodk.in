@@ -4,7 +4,7 @@ date: 2016-01-28
 description: "Getting started with Cassandra"
 tags: [tutorials]
 cover: "assets/images/cassandra/astronaut_on_the_moon.jpg"
-draft: false
+draft: true
 ---
 
 <p>The Growth of Big Data - Big Data is one of the key forces driving the growth and popularity of NoSQL for business. The almost limitless array of data collection technologies ranging from simple online actions to point of sale systems to GPS tools to smartphones and tablets to sophisticated sensors – and many more – act as force multipliers for data growth.

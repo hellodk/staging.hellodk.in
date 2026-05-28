@@ -4,7 +4,7 @@ date: 2016-01-28
 description: "5 interesting cloud predictions for 2016"
 tags: [tutorials, cloud, predictions, 2016, year, hellodk]
 cover: "assets/images/cover4.jpg"
-draft: false
+draft: true
 ---
 
 ####1. It's time for IOT-

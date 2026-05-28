@@ -4,7 +4,7 @@ date: 2020-07-08
 description: "Pushing Custom Vagrant Boxes to Vagrant Cloud"
 tags: [about]
 cover: "assets/images/utilities/IMG_75751.JPG"
-draft: false
+draft: true
 ---
 
 <html>

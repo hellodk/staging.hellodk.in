@@ -3,7 +3,7 @@ title: "RabbitMQ — Detecting Dead TCP Connections with Heartbeats"
 date: 2017-04-24
 description: "How to detect dead TCP connections in RabbitMQ using heartbeats and what happens when the broker goes silent."
 tags: [linux, networking, tcp]
-draft: false
+draft: true
 ---
 
 <p>

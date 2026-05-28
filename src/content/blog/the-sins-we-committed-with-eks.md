@@ -4,7 +4,7 @@ date: 2021-01-01
 description: "Hard lessons from running production workloads on Amazon EKS — what went wrong and what we would do differently."
 tags: [devops, tutorials]
 cover: "assets/images/travel/cover.jpg"
-draft: false
+draft: true
 ---
 
 Kubernetes is vast - Very very vast, vaster is the pace at which Kubernetes is growing and new developments on Kubernetes and it's supporting tools are getting pitched into.

@@ -1,7 +1,7 @@
 ---
 title: "Kubernetes Monitoring"
 date: 2026-05-01
-description: "Kubernetes Monitoring"
+description: "Complete guide to setting up kube-prometheus-stack — Prometheus, Grafana dashboards, AlertManager, and the PromQL queries that actually matter in production."
 tags: [kubernetes, monitoring, prometheus]
 draft: false
 ---

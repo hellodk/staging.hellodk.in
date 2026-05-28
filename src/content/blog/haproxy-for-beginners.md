@@ -3,7 +3,7 @@ title: "HAProxy for Beginners"
 date: 2017-04-20
 description: "An introduction to HAProxy — what it is, how to configure it, and when to use it for load balancing."
 tags: [linux, haproxy, networking]
-draft: false
+draft: true
 ---
 
 <h2><u>Introduction</u></h2>
