@@ -1,12 +1,29 @@
 ---
-import Nav from '../components/Nav.astro';
-import Hero from '../components/Hero.astro';
+import { getCollection } from 'astro:content';
+import HomeLayout from '../layouts/HomeLayout.astro';
+import PostGrid from '../components/PostGrid.astro';
+import Pagination from '../components/Pagination.astro';
 import '../styles/global.css';
+
+const POSTS_PER_PAGE = 12;
+
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+const posts = allPosts.slice(0, POSTS_PER_PAGE);
+
+const mappedPosts = posts.map(post => ({
+  slug: post.id,
+  title: post.data.title,
+  description: post.data.description,
+  date: post.data.date,
+  tags: post.data.tags,
+  cover: post.data.cover,
+}));
 ---
-<html lang="en">
-<head><meta charset="UTF-8" /><title>hellodk.io</title></head>
-<body>
-  <Nav />
-  <Hero />
-</body>
-</html>
+
+<HomeLayout>
+  <PostGrid posts={mappedPosts} />
+  <Pagination currentPage={1} totalPages={totalPages} />
+</HomeLayout>
