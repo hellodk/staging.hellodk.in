@@ -3,6 +3,7 @@ title: "Browser-Based Ubuntu Desktop with 3-Factor Auth and Zero Open Ports"
 date: 2026-04-25
 description: "Access your home lab from anywhere — 3-factor auth, zero open ports, $0/month. Apache Guacamole + Cloudflare Tunnel + xrdp + Ubuntu GNOME."
 tags: [kubernetes, networking, rdp]
+cover: "/assets/images/rdp_cover.png"
 draft: false
 ---
 

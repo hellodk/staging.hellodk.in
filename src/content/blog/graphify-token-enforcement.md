@@ -3,6 +3,7 @@ title: "406 Million Wasted Tokens: How I Caught Claude Ignoring Its Own Rules"
 date: 2026-05-28
 description: "Claude built a knowledge graph of the kri codebase, documented the token-saving workflow, then immediately ignored it. Here's what happened, what the token data showed, and how a PreToolUse hook now enforces the rule at the machine level."
 tags: [claude-code, graphify, tokens, hooks, ai-agents]
+cover: "/assets/images/tokens_cover.png"
 draft: false
 ---
 
