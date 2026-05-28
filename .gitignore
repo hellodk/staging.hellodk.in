@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+_site/
+*.DS_Store
+.env
+.env.*
+!.env.example
+Gemfile.lock-bak
+modernized_blog/
