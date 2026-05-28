@@ -35,6 +35,19 @@ const { title, description, date, updated, tags, cover, readingTime } = Astro.pr
     </div>
 
     <slot name="after-prose" />
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div class="site-footer__links">
+          <a href="/">hellodk.io</a>
+          <a href="https://github.com/hellodk" target="_blank" rel="noopener">GitHub</a>
+          <a href="/newsletter">Newsletter</a>
+          <a href="/feed.xml">RSS</a>
+          <a href="/about">About</a>
+        </div>
+        <p>© {new Date().getFullYear()} Deepak Gupta · Built with Astro · Hosted on Cloudflare Pages</p>
+      </div>
+    </footer>
   </div>
 </BaseLayout>
 
@@ -44,4 +57,25 @@ const { title, description, date, updated, tags, cover, readingTime } = Astro.pr
   background: #ffffff;
   padding: 48px 24px 64px;
 }
+.site-footer {
+  background: #0d0d0d;
+  border-top: 1px solid var(--color-border);
+  padding: 28px 24px;
+  text-align: center;
+}
+.site-footer__inner { max-width: 1200px; margin: 0 auto; }
+.site-footer__links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.site-footer__links a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.site-footer__links a:hover { color: #ffffff; }
+.site-footer p { color: var(--color-text-muted); font-size: 0.78rem; }
 </style>

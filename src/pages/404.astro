@@ -7,10 +7,13 @@ import Nav from '../components/Nav.astro';
   <div style="min-height:100vh;background:#0d0d0d;">
     <Nav />
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 56px);text-align:center;padding:24px;">
-      <p style="font-size:6rem;font-weight:900;color:#2d2d2d;line-height:1;">404</p>
+      <p style="font-size:6rem;font-weight:900;color:#e5645e;line-height:1;">404</p>
       <h1 style="font-size:1.4rem;font-weight:600;color:#ffffff;margin:16px 0 8px;">Page not found</h1>
       <p style="color:#9ba3af;margin-bottom:28px;">The page you're looking for doesn't exist or has moved.</p>
-      <a href="/" style="color:var(--color-accent);text-decoration:none;font-weight:500;">← Back to blog</a>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+        <a href="/" style="color:var(--color-accent);text-decoration:none;font-weight:500;">← Back to blog</a>
+        <a href="/search" style="color:#9ba3af;text-decoration:none;font-weight:500;">Search →</a>
+      </div>
     </div>
   </div>
 </BaseLayout>

@@ -1,12 +1,17 @@
 ---
+interface Props {
+  title?: string;
+  subtitle?: string;
+}
+const { title = 'Enjoyed this post?', subtitle = 'Get the next one in your inbox — only when I ship something worth reading.' } = Astro.props;
 const BREVO_FORM_URL = import.meta.env.PUBLIC_BREVO_FORM_URL;
 ---
 
 <section class="nl-cta">
   <div class="nl-cta__inner">
     <div class="nl-cta__text">
-      <h3 class="nl-cta__title">Enjoyed this post?</h3>
-      <p class="nl-cta__sub">Get the next one in your inbox — only when I ship something worth reading.</p>
+      <h3 class="nl-cta__title">{title}</h3>
+      <p class="nl-cta__sub">{subtitle}</p>
     </div>
     {BREVO_FORM_URL ? (
       <form
