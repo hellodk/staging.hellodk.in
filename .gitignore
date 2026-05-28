@@ -8,3 +8,8 @@ _site/
 !.env.example
 Gemfile.lock-bak
 modernized_blog/
+.playwright-mcp/
+*.png
+*.jpg
+*.jpeg
+!public/images/**
