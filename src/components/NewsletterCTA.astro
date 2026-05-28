@@ -1,3 +1,82 @@
 ---
+const BREVO_FORM_URL = import.meta.env.PUBLIC_BREVO_FORM_URL;
 ---
-<!-- Newsletter CTA — configured in Task 15 -->
+
+<section class="nl-cta">
+  <div class="nl-cta__inner">
+    <div class="nl-cta__text">
+      <h3 class="nl-cta__title">Enjoyed this post?</h3>
+      <p class="nl-cta__sub">Get the next one in your inbox — only when I ship something worth reading.</p>
+    </div>
+    {BREVO_FORM_URL ? (
+      <form
+        action={BREVO_FORM_URL}
+        method="POST"
+        class="nl-cta__form"
+        target="_blank"
+      >
+        <input
+          type="email"
+          name="EMAIL"
+          placeholder="you@example.com"
+          required
+          class="nl-cta__input"
+          autocomplete="email"
+        />
+        <button type="submit" class="nl-cta__btn">Subscribe →</button>
+      </form>
+    ) : (
+      <p style="color:#9ba3af;font-size:0.85rem;">Newsletter form not configured.</p>
+    )}
+    <p class="nl-cta__substack">
+      Or follow on <a href="https://substack.com/@hellodk" target="_blank" rel="noopener">Substack</a> for the newsletter.
+    </p>
+  </div>
+</section>
+
+<style>
+.nl-cta {
+  background: #0d0d0d;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 40px 24px;
+}
+.nl-cta__inner {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.nl-cta__title { font-size: 1.2rem; font-weight: 700; color: #ffffff; }
+.nl-cta__sub { font-size: 0.875rem; color: #9ba3af; }
+.nl-cta__form { display: flex; gap: 8px; width: 100%; max-width: 420px; }
+.nl-cta__input {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid var(--color-border);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  outline: none;
+}
+.nl-cta__input:focus { border-color: var(--color-accent); }
+.nl-cta__input::placeholder { color: #4b5563; }
+.nl-cta__btn {
+  background: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nl-cta__btn:hover { opacity: 0.9; }
+.nl-cta__substack { font-size: 0.8rem; color: #6b7280; }
+.nl-cta__substack a { color: #ff6719; text-decoration: none; }
+</style>

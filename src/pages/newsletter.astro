@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+---
+
+<BaseLayout title="Newsletter — hellodk.io" description="Subscribe to the hellodk.io newsletter — DevOps, SRE, and homelab deep-dives.">
+  <div style="min-height:100vh;background:#0d0d0d;">
+    <Nav />
+    <div style="max-width:680px;margin:0 auto;padding:64px 24px;text-align:center;">
+      <h1 style="font-size:2rem;font-weight:700;margin-bottom:12px;">Newsletter</h1>
+      <p style="color:#9ba3af;margin-bottom:48px;">
+        DevOps deep-dives, homelab stories, debugging war stories, and tools worth knowing about.
+        No spam. Sent when something is actually worth reading.
+      </p>
+    </div>
+    <NewsletterCTA />
+  </div>
+</BaseLayout>
