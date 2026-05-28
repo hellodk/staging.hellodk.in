@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+---
+
+<BaseLayout title="Search — hellodk.io">
+  <div style="min-height:100vh;background:#0d0d0d;">
+    <Nav />
+    <div style="max-width:720px;margin:0 auto;padding:48px 24px;">
+      <h1 style="font-size:1.6rem;font-weight:700;margin-bottom:24px;">Search</h1>
+      <div id="search"></div>
+    </div>
+  </div>
+</BaseLayout>
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+<script is:inline src="/pagefind/pagefind-ui.js"></script>
+<script is:inline>
+  window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      resetStyles: false,
+    });
+  });
+</script>
+
+<style>
+  :root {
+    --pagefind-ui-primary: #e5645e;
+    --pagefind-ui-background: #1a1a1a;
+    --pagefind-ui-border: #2d2d2d;
+    --pagefind-ui-text: #e6edf3;
+    --pagefind-ui-scale: 0.9;
+  }
+</style>

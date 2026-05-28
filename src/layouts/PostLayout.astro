@@ -29,7 +29,7 @@ const { title, description, date, updated, tags, cover, readingTime } = Astro.pr
     <PostHeader {title} {date} {tags} {cover} {readingTime} />
 
     <div class="post-body">
-      <div class="prose">
+      <div class="prose" data-pagefind-body>
         <slot />
       </div>
     </div>
