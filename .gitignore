@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+_site/
+*.DS_Store
+.env
+.env.*
+!.env.example
+Gemfile.lock-bak
+modernized_blog/
+.playwright-mcp/
+*.png
+*.jpg
+*.jpeg
+!public/images/**
+!public/assets/images/**

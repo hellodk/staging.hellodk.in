@@ -1,0 +1,56 @@
+---
+layout: post
+cover: false
+title: Python regex Simplified
+date:  2017-07-13 03:30:00
+tags: tutorials
+subclass: 'post tag-tutorials'
+categories: 'dk'
+navigation: True
+#logo: 'assets/images/utilities/home_icon.png'
+cover: 'assets/images/rethinkdb/rethinkdb3.png'
+---
+<h2><u>Introduction</u></h2>
+
+<h3>Python regex metacharacters</h3>
+. ^ $ * + ? { } [ ] \ | ( )
+
+<p>
+
+1. [] - 
+
+Negate - ^
+
+Escape Character - \
+
+
+The first metacharacters we’ll look at are [ and ]. They’re used for specifying a character class, which is a set of characters that you wish to match. Characters can be listed individually, or a range of characters can be indicated by giving two characters and separating them by a '-'. For example, [abc] will match any of the characters a, b, or c; this is the same as [a-c], which uses a range to express the same set of characters. If you wanted to match only lowercase letters, your RE would be [a-z].
+
+Metacharacters are not active inside classes. For example, [akm$] will match any of the characters 'a', 'k', 'm', or '$'; '$' is usually a metacharacter, but inside a character class it’s stripped of its special nature.
+
+You can match the characters not listed within the class by complementing the set. This is indicated by including a '^' as the first character of the class; '^' outside a character class will simply match the '^' character. For example, [^5] will match any character except '5'.
+
+Perhaps the most important metacharacter is the backslash, \. As in Python string literals, the backslash can be followed by various characters to signal various special sequences. It’s also used to escape all the metacharacters so you can still match them in patterns; for example, if you need to match a [ or \, you can precede them with a backslash to remove their special meaning: \[ or \\.
+
+Some of the special sequences beginning with '\' represent predefined sets of characters that are often useful, such as the set of digits, the set of letters, or the set of anything that isn’t whitespace.
+
+Let’s take an example: \w matches any alphanumeric character. If the regex pattern is expressed in bytes, this is equivalent to the class [a-zA-Z0-9_]. If the regex pattern is a string, \w will match all the characters marked as letters in the Unicode database provided by the unicodedata module. You can use the more restricted definition of \w in a string pattern by supplying the re.ASCII flag when compiling the regular expression.
+
+The following list of special sequences isn’t complete. For a complete list of sequences and expanded class definitions for Unicode string patterns, see the last part of Regular Expression Syntax in the Standard Library reference. In general, the Unicode versions match any character that’s in the appropriate category in the Unicode database.
+
+\d
+Matches any decimal digit; this is equivalent to the class [0-9].
+\D
+Matches any non-digit character; this is equivalent to the class [^0-9].
+\s
+Matches any whitespace character; this is equivalent to the class [ \t\n\r\f\v].
+\S
+Matches any non-whitespace character; this is equivalent to the class [^ \t\n\r\f\v].
+\w
+Matches any alphanumeric character; this is equivalent to the class [a-zA-Z0-9_].
+\W
+Matches any non-alphanumeric character; this is equivalent to the class [^a-zA-Z0-9_].
+These sequences can be included inside a character class. For example, [\s,.] is a character class that will match any whitespace character, or ',' or '.'.
+
+The final metacharacter in this section is .. It matches anything except a newline character, and there’s an alternate mode (re.DOTALL) where it will match even a newline. '.' is often used where you want to match “any character”.
+</p>

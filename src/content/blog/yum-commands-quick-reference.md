@@ -1,0 +1,33 @@
+---
+title: "Yum Commands Quick Reference"
+date: 2017-06-10
+description: "The most useful yum commands for package management on RHEL/CentOS systems."
+tags: [linux, rhel, centos, yum]
+draft: false
+---
+
+<ol>
+<li><h5>To make a search of some package or term in the data base in some of the formed deposits yum in the system:</h5></li>
+</br>
+<p>Syntax: <span style="font-family: courier new,courier;">yum search any-package</span></p>
+Example: <code>yum search httpd</code>
+<h5>To consult the information contained in a package in individual:</h5>
+</br>yum info any-package
+</br>Example: yum info httpd
+</br></br>Uninstalling packages. Desinstalación of packages along with everything what it depends on these:
+</br>yum remove any-package
+</br>Example: yum remove gkrellm
+</br>The following thing will list all the packages available in the data base yum and that can settle:
+</br>available yum list|less
+</br>The following thing will list all the packages installed in the system:
+</br>yum list installed|less
+</br>The following thing will list all the packages installed in the system and that can (they must) be updated:
+</br>yum list updates|less
+</br>Cleaning of the system.
+</br>
+<p><span style="font-family: courier new,courier;">Yum leaves as result of its use heads and packages RPM stored in the interior of the directory located in the route /var/cache/yum/. Particularly the packages RPM that have settled can occupy much space and is by such reason agrees to eliminate them once no longer they have utility. Also it agrees to do the same with the old heads of packages that no longer are in the data base. In order to make the </br>corresponding cleaning, the following thing can be executed:</span></p>s
+</br>
+</br><code>yum clean all</code>
+</br>Group install:
+</br><code>yum groupinstall "groupname"</code>
+</ol>

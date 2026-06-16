@@ -1,0 +1,116 @@
+---
+interface Post {
+  slug: string;
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+  cover?: string;
+}
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+---
+
+<section class="post-list">
+  {posts.map((post) => {
+    const formattedDate = post.date.toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+    return (
+      <article class="post-item">
+        {post.cover && (
+          <a href={`/${post.slug}`} class="post-item__cover-link">
+            <img src={post.cover} alt={post.title} class="post-item__cover" loading="lazy" />
+          </a>
+        )}
+        <div class="post-item__body">
+          {post.tags.slice(0,2).map(tag => (
+            <a href={`/tag/${tag}`} class="post-item__tag">{tag}</a>
+          ))}
+          <h2 class="post-item__title">
+            <a href={`/${post.slug}`}>{post.title}</a>
+          </h2>
+          <p class="post-item__excerpt">{post.description}</p>
+          <footer class="post-item__meta">
+            <span>Deepak Gupta</span>
+            <span class="post-item__sep">·</span>
+            <time datetime={post.date.toISOString()}>{formattedDate}</time>
+            <a href={`/${post.slug}`} class="post-item__readmore">Read more <span aria-hidden="true">→</span></a>
+          </footer>
+        </div>
+      </article>
+    );
+  })}
+</section>
+
+<style>
+.post-list {}
+
+.post-item {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.post-item:first-child { padding-top: 0; }
+.post-item:last-child { border-bottom: none; }
+
+.post-item__cover-link { display: block; margin-bottom: 20px; }
+.post-item__cover {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.post-item__tag {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-accent);
+  text-decoration: none;
+  margin-right: 8px;
+}
+.post-item__tag:hover { text-decoration: underline; }
+
+.post-item__title {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 8px 0 10px;
+  color: #15171a;
+}
+.post-item__title a {
+  color: inherit;
+  text-decoration: none;
+}
+.post-item__title a:hover { color: var(--color-accent); }
+
+.post-item__excerpt {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #5d6d76;
+  margin-bottom: 14px;
+}
+
+.post-item__meta {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #9eabb3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.post-item__sep { color: #ccc; }
+.post-item__readmore {
+  margin-left: auto;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.post-item__readmore:hover { text-decoration: underline; }
+</style>

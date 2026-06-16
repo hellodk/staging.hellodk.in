@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import HomeLayout from '../../layouts/HomeLayout.astro';
+import PostList from '../../components/PostList.astro';
+import Pagination from '../../components/Pagination.astro';
+
+export async function getStaticPaths() {
+  const POSTS_PER_PAGE = 10;
+  const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+
+  return Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: String(i + 1) },
+    props: {
+      posts: allPosts.slice(i * POSTS_PER_PAGE, (i + 1) * POSTS_PER_PAGE),
+      currentPage: i + 1,
+      totalPages,
+    },
+  }));
+}
+
+const { posts, currentPage, totalPages } = Astro.props;
+const mappedPosts = posts.map(post => ({
+  slug: post.id,
+  title: post.data.title,
+  description: post.data.description,
+  date: post.data.date,
+  tags: post.data.tags,
+  cover: post.data.cover,
+}));
+---
+
+<HomeLayout title={`hellodk.io — Page ${currentPage}`}>
+  <PostList posts={mappedPosts} />
+  <Pagination currentPage={currentPage} totalPages={totalPages} />
+</HomeLayout>

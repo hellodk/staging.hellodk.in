@@ -1,0 +1,89 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+}
+const { title = 'Enjoyed this post?', subtitle = 'Get the next one in your inbox — only when I ship something worth reading.' } = Astro.props;
+const BREVO_FORM_URL = import.meta.env.PUBLIC_BREVO_FORM_URL;
+---
+
+<section class="nl-cta">
+  <div class="nl-cta__inner">
+    <div class="nl-cta__text">
+      <h3 class="nl-cta__title">{title}</h3>
+      <p class="nl-cta__sub">{subtitle}</p>
+    </div>
+    {BREVO_FORM_URL ? (
+      <form
+        action={BREVO_FORM_URL}
+        method="POST"
+        class="nl-cta__form"
+        target="_blank"
+      >
+        <input
+          type="email"
+          name="EMAIL"
+          placeholder="you@example.com"
+          required
+          class="nl-cta__input"
+          autocomplete="email"
+        />
+        <button type="submit" class="nl-cta__btn">Subscribe →</button>
+      </form>
+    ) : (
+      <p style="color:#9ba3af;font-size:0.85rem;">Newsletter form not configured.</p>
+    )}
+    <p class="nl-cta__substack">
+      Or follow on <a href="https://substack.com/@hellodk" target="_blank" rel="noopener">Substack</a> for the newsletter.
+    </p>
+  </div>
+</section>
+
+<style>
+.nl-cta {
+  background: #f5f7f9;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: 40px 24px;
+}
+.nl-cta__inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.nl-cta__title { font-family: var(--font-sans); font-size: 1.2rem; font-weight: 700; color: #15171a; }
+.nl-cta__sub { font-family: var(--font-sans); font-size: 0.875rem; color: #5d6d76; }
+.nl-cta__form { display: flex; gap: 8px; width: 100%; max-width: 420px; }
+.nl-cta__input {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  color: #3a4145;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  outline: none;
+}
+.nl-cta__input:focus { border-color: var(--color-accent); }
+.nl-cta__input::placeholder { color: #9eabb3; }
+.nl-cta__btn {
+  background: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nl-cta__btn:hover { opacity: 0.9; }
+.nl-cta__substack { font-family: var(--font-sans); font-size: 0.8rem; color: #9eabb3; }
+.nl-cta__substack a { color: var(--color-accent); text-decoration: none; }
+</style>

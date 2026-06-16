@@ -1,0 +1,28 @@
+---
+interface Props {
+  tags: string[];
+  size?: 'sm' | 'md';
+  theme?: 'dark' | 'light';
+}
+
+const { tags, size = 'md', theme = 'dark' } = Astro.props;
+---
+
+{tags.length > 0 && (
+  <div class:list={['taglist', `taglist--${size}`]}>
+    {tags.map(tag => (
+      <a
+        href={`/tag/${tag}`}
+        class:list={['tag', theme === 'light' && 'tag--light']}
+      >
+        {tag}
+      </a>
+    ))}
+  </div>
+)}
+
+<style>
+.taglist { display: flex; flex-wrap: wrap; gap: 6px; }
+.taglist--sm .tag { font-size: 0.68rem; padding: 2px 8px; }
+.tag--light { background: #fef2f2; color: var(--color-accent); }
+</style>

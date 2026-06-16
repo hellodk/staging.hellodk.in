@@ -1,0 +1,194 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  updated?: Date;
+  tags: string[];
+  cover?: string;
+  readingTime?: number;
+}
+
+const { title, description, date, updated, tags, cover, readingTime } = Astro.props;
+const formattedDate = date.toLocaleDateString('en-GB', {
+  day: 'numeric', month: 'long', year: 'numeric'
+});
+---
+
+<BaseLayout
+  title={`${title} — hellodk.io`}
+  description={description}
+  cover={cover}
+  type="article"
+  publishedDate={date}
+  tags={tags}
+>
+  <!-- Post head: cover image or dark solid -->
+  <div class:list={['post-head', cover ? 'post-head--cover' : 'post-head--nocover']}
+       style={cover ? `background-image: url(${cover})` : undefined}>
+    {cover && <div class="post-head__overlay"></div>}
+    <Nav overlay={!!cover} />
+    {!cover && (
+      <header class="post-head__header">
+        <div class="post-head__meta">
+          {tags.slice(0,3).map(tag => (
+            <a href={`/tag/${tag}`} class="tag dark">{tag}</a>
+          ))}
+        </div>
+        <h1 class="post-head__title">{title}</h1>
+        <div class="post-head__byline">
+          <span>Deepak Gupta</span>
+          <span class="sep">·</span>
+          <time datetime={date.toISOString()}>{formattedDate}</time>
+          {readingTime && <><span class="sep">·</span><span>{readingTime} min read</span></>}
+        </div>
+      </header>
+    )}
+  </div>
+
+  <!-- If has cover: show title below the image on white bg -->
+  {cover && (
+    <header class="post-title-block">
+      <div class="post-title-block__inner">
+        <div class="post-title-block__tags">
+          {tags.slice(0,3).map(tag => (
+            <a href={`/tag/${tag}`} class="tag">{tag}</a>
+          ))}
+        </div>
+        <h1 class="post-title-block__title">{title}</h1>
+        <div class="post-title-block__byline">
+          <span>Deepak Gupta</span>
+          <span class="sep">·</span>
+          <time datetime={date.toISOString()}>{formattedDate}</time>
+          {readingTime && <><span class="sep">·</span><span>{readingTime} min read</span></>}
+        </div>
+      </div>
+    </header>
+  )}
+
+  <!-- Article body -->
+  <article class="post-content" data-pagefind-body>
+    <slot />
+  </article>
+
+  <slot name="after-prose" />
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <section class="copyright">
+        <a href="/">hellodk.io</a> &copy; {new Date().getFullYear()}
+      </section>
+      <section class="poweredby">
+        <a href="https://github.com/hellodk" target="_blank" rel="noopener">GitHub</a>
+        &nbsp;·&nbsp;<a href="/feed.xml">RSS</a>
+        &nbsp;·&nbsp;<a href="/about">About</a>
+      </section>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+/* Cover post head */
+.post-head--cover {
+  position: relative;
+  height: 420px;
+  background: #15171a center center no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+}
+.post-head__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+/* No-cover post head — dark header with title */
+.post-head--nocover {
+  background: #15171a;
+  display: flex;
+  flex-direction: column;
+}
+.post-head__header {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 24px 48px;
+  width: 100%;
+}
+.post-head__meta { margin-bottom: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+.post-head__title {
+  font-family: var(--font-sans);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin-bottom: 14px;
+}
+.post-head__byline {
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  color: rgba(255,255,255,0.65);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sep { color: rgba(255,255,255,0.3); }
+
+/* Title block below cover image */
+.post-title-block {
+  background: #fff;
+  border-bottom: 1px solid var(--color-border);
+  padding: 32px 24px;
+}
+.post-title-block__inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.post-title-block__tags { margin-bottom: 12px; display: flex; gap: 6px; }
+.post-title-block__title {
+  font-family: var(--font-sans);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #15171a;
+  margin-bottom: 12px;
+}
+.post-title-block__byline {
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  color: #9eabb3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Footer */
+.site-footer {
+  background: #15171a;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+}
+.site-footer__inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.site-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.site-footer a:hover { color: #fff; }
+.site-footer .copyright, .site-footer .poweredby { color: rgba(255,255,255,0.5); }
+</style>

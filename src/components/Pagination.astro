@@ -1,0 +1,50 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  base?: string;
+}
+
+const { currentPage, totalPages, base = '/page' } = Astro.props;
+const prev = currentPage > 1 ? (currentPage === 2 ? '/' : `${base}/${currentPage - 1}`) : null;
+const next = currentPage < totalPages ? `${base}/${currentPage + 1}` : null;
+---
+
+{totalPages > 1 && (
+  <nav class="pagination" aria-label="Page navigation">
+    {prev
+      ? <a href={prev} class="pagination__btn">← Newer Posts</a>
+      : <span class="pagination__btn pagination__btn--disabled">← Newer Posts</span>
+    }
+    <span class="pagination__info">Page {currentPage} of {totalPages}</span>
+    {next
+      ? <a href={next} class="pagination__btn">Older Posts →</a>
+      : <span class="pagination__btn pagination__btn--disabled">Older Posts →</span>
+    }
+  </nav>
+)}
+
+<style>
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 24px 48px;
+}
+.pagination__btn {
+  font-family: var(--font-sans);
+  color: #9eabb3;
+  text-decoration: none;
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: #fff;
+  transition: all 0.15s;
+}
+a.pagination__btn:hover { color: #15171a; border-color: #15171a; }
+.pagination__btn--disabled { opacity: 0.3; cursor: default; }
+.pagination__info { font-family: var(--font-sans); font-size: 0.8rem; color: #9eabb3; }
+</style>

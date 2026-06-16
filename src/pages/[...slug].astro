@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import { renderEntry } from 'astro/content/runtime';
+import PostLayout from '../layouts/PostLayout.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+import Giscus from '../components/Giscus.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
+import { readingTime } from '../utils/readingTime';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post, allPosts: posts },
+  }));
+}
+
+const { post, allPosts } = Astro.props;
+const { Content } = await renderEntry(post);
+
+const rt = readingTime(post.body ?? '');
+
+const related = allPosts
+  .filter(p => p.id !== post.id && !p.data.draft)
+  .filter(p => p.data.tags.some(t => post.data.tags.includes(t)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3)
+  .map(p => ({
+    slug: p.id,
+    title: p.data.title,
+    description: p.data.description,
+    date: p.data.date,
+    tags: p.data.tags,
+    cover: p.data.cover,
+  }));
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  updated={post.data.updated}
+  tags={post.data.tags}
+  cover={post.data.cover}
+  readingTime={rt}
+>
+  <Content />
+
+  <Fragment slot="after-prose">
+    <NewsletterCTA />
+    <Giscus />
+    <RelatedPosts posts={related} />
+  </Fragment>
+</PostLayout>

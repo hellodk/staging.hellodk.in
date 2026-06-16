@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+---
+
+<BaseLayout title="About — hellodk.io" description="About Deepak Gupta — DevOps, SRE, homelab builder and writer.">
+  <div class="about-page">
+    <Nav />
+    <main class="about-main">
+      <div class="about-content">
+        <h1>About</h1>
+        <p>
+          I'm Deepak Gupta — a full-time technologist based in Bangalore, India.
+          I spend most of my time building and operating infrastructure: Kubernetes clusters,
+          SaltStack fleet management, CI/CD pipelines, observability stacks, and the occasional
+          homelab experiment.
+        </p>
+        <p>
+          I've been writing on hellodk.io since 2015. Most posts are about things I've debugged,
+          built, or broken — and what I learned from it. The categories lean DevOps/SRE but
+          occasionally I write about photography, travel, and food.
+        </p>
+        <h2>What I work on</h2>
+        <ul>
+          <li><strong>kri</strong> — fleet management platform for Apple Silicon Mac Mini build infrastructure</li>
+          <li>Kubernetes (k8s, k0s, EKS, AKS) — production and homelab</li>
+          <li>SaltStack — configuration management and orchestration</li>
+          <li>Observability — Prometheus, Grafana, OpenTelemetry, Tempo</li>
+          <li>CI/CD — Jenkins, GitHub Actions, Gitea</li>
+        </ul>
+        <h2>Find me</h2>
+        <ul>
+          <li><a href="https://github.com/hellodk" target="_blank" rel="noopener">GitHub @hellodk</a></li>
+          <li><a href="/newsletter">Substack newsletter</a></li>
+          <li><a href="/feed.xml">RSS feed</a></li>
+        </ul>
+      </div>
+    </main>
+    <NewsletterCTA />
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <section class="copyright">
+          <a href="/">hellodk.io</a> &copy; {new Date().getFullYear()}
+        </section>
+        <section class="poweredby">
+          <a href="https://github.com/hellodk" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;·&nbsp;
+          <a href="/newsletter">Newsletter</a>
+          &nbsp;·&nbsp;
+          <a href="/feed.xml">RSS</a>
+        </section>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+.about-page { min-height: 100vh; background: #15171a; }
+.about-main { background: #ffffff; padding: 64px 24px; min-height: calc(100vh - 56px); }
+.about-content {
+  max-width: 700px;
+  margin: 0 auto;
+  color: #3a4145;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+.about-content h1 {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #15171a;
+}
+.about-content h2 {
+  font-family: var(--font-sans);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  color: #15171a;
+}
+.about-content p { margin-bottom: 1.4rem; }
+.about-content ul { margin: 0 0 1.4rem 1.5rem; }
+.about-content li { margin-bottom: 0.5rem; }
+.about-content a { color: var(--color-accent); }
+
+/* Footer */
+.site-footer {
+  background: #15171a;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+}
+.site-footer__inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.site-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.site-footer a:hover { color: #fff; }
+.site-footer .copyright, .site-footer .poweredby { color: rgba(255,255,255,0.5); }
+</style>

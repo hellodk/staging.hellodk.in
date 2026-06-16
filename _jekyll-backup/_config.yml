@@ -1,0 +1,77 @@
+# Jykell configuration
+markdown: redcarpet
+highlighter: pygments
+paginate: 5
+language: 'en-uk'
+# bundle exec jekyll serve --watch
+# Website info
+name: 'Curiosity is the most powerful thing you own'
+description: "A beautiful narrative written over an elegant publishing platform. The story begins here..."
+
+# Author's info
+author: 'Deepak Gupta'
+# edit 'categories' in the front matter of every post to match this username
+nickname: casper
+bio: 'A full time technologist cum foodieeeeeee...
+I spend most of my time playing with open source tools and technologies.
+I prefer hanging out most of the time, and have been a taveller since ages, 
+besides being a biker at heart I do love to practice photography in my liesure.'
+
+location: 'Bangalore, INDIA'
+url: 'https://hellodk.io/'
+image: 'assets/images/resume/dk.jpg'
+
+short_url: 'https://hellodk.io/'
+google_analytics: UA-84547172-1
+disqus: hellodk
+# edit baseurl to simply '/' if using as your personal page (instead of a project page)
+baseurl: /
+
+# Permalinks
+permalink: /:title
+# permalink: /author/:username
+# permalink: /tag/:tag
+
+
+# gems and other configs
+gems: [jekyll-paginate]
+exclude: [vendor]
+
+# Additional settings available on the front-matter
+# Site logo in the index.html (as in demo.ghost.io)
+# Author's page cover in _layouts/author.html
+# The same for page.html and tag.html layouts
+# Post's page cover as a per-post basis _posts/...
+# Disqus comments as a per-post basis
+# ...
+
+
+# Settings for builing master branch with travis-ci
+# with jekyll-travis
+
+# Settings for deploy rake task
+# Username and repo of Github repo, e.g.
+# https://github.com/USERNAME/REPO.git
+# username defaults to ENV['GIT_NAME'] used by Travis
+# repo defaults to USERNAME.github.io
+# Branch defaults to "source" for USERNAME.github.io
+# or "master" otherwise
+safe: false
+lsi: false
+username: hellodk
+repo: hellodk.github.io
+branch: master
+relative_source: ../jasper/
+destination: ../hellodk.github.io/
+production_url:  https://hellodk.github.io/ #https://hellodk.io
+source_url:      https://github.com/hellodk/ #https://hellodk.io
+
+exclude:
+  - README.md
+  - Rakefile
+  - Gemfile
+  - Gemfile.lock
+  - changelog.md
+  - "*.Rmd"
+  - vendor
+  - .travis.yml

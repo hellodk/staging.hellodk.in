@@ -1,0 +1,138 @@
+---
+interface Props {
+  overlay?: boolean;  // true = transparent over hero, false = dark solid
+}
+const { overlay = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<nav class:list={['nav', overlay && 'nav--overlay']}>
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">hello<em>dk</em></a>
+    <div class="nav__links" id="nav-links">
+      <a href="/" class:list={['nav__link', currentPath === '/' && 'active']}>Blog</a>
+      <a href="/tag/devops" class="nav__link">DevOps</a>
+      <a href="/tag/kubernetes" class="nav__link">Kubernetes</a>
+      <a href="/about" class:list={['nav__link', currentPath === '/about' && 'active']}>About</a>
+      <a href="/newsletter" class="nav__link">Newsletter</a>
+      <a href="/search" class="nav__link nav__link--icon" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </a>
+      <a href="https://github.com/hellodk" class="nav__link nav__link--icon" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      </a>
+    </div>
+    <button class="nav__burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  const burger = document.getElementById('nav-burger');
+  const links = document.getElementById('nav-links');
+  burger?.addEventListener('click', () => {
+    const open = links?.classList.toggle('nav__links--open');
+    burger.setAttribute('aria-expanded', String(open));
+  });
+</script>
+
+<style>
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #15171a;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  height: 56px;
+}
+.nav--overlay {
+  position: absolute;
+  width: 100%;
+  background: transparent;
+  border-bottom: none;
+  top: 0;
+}
+.nav__inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav__logo {
+  font-family: var(--font-mono, monospace);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+.nav__logo em { color: var(--color-accent, #e5645e); font-style: normal; }
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.nav__link {
+  font-family: var(--font-sans, sans-serif);
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+}
+.nav__link:hover, .nav__link.active { color: #fff; }
+.nav__link--icon { color: rgba(255,255,255,0.7); }
+
+.nav__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.nav__burger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .nav__burger { display: flex; }
+  .nav__links {
+    display: none;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: #15171a;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 8px 0;
+    z-index: 999;
+  }
+  .nav__links--open { display: flex; }
+  .nav__link {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav__link:last-child { border-bottom: none; }
+}
+</style>

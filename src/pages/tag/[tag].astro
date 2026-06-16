@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import HomeLayout from '../../layouts/HomeLayout.astro';
+import PostList from '../../components/PostList.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const allTags = [...new Set(posts.flatMap(p => p.data.tags))];
+
+  return allTags.map(tag => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter(p => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+const mappedPosts = posts.map(p => ({
+  slug: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  date: p.data.date,
+  tags: p.data.tags,
+  cover: p.data.cover,
+}));
+---
+
+<HomeLayout title={`#${tag} — hellodk.io`}>
+  <div class="tag-hero">
+    <h1 class="tag-hero__title">#{tag}</h1>
+    <p class="tag-hero__count">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+  </div>
+  <PostList posts={mappedPosts} />
+</HomeLayout>
+
+<style>
+.tag-hero {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0;
+}
+.tag-hero__title {
+  font-family: var(--font-sans);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+.tag-hero__count {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: #9eabb3;
+  margin-top: 4px;
+}
+</style>

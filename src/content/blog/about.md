@@ -1,0 +1,11 @@
+---
+title: "About"
+date: 2015-12-28
+description: "About"
+tags: [about]
+cover: "assets/images/utilities/IMG_75751.JPG"
+draft: true
+---
+
+Too often we under-estimate the power of a touch, a smile, a kind word, a listening ear, an honest compliment, or the smallest act of caring, all of which have the potential to turn a life around. 
+The idea behind writing this blog/website is to connect to people and share my experiences with them.

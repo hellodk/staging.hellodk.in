@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How apt upgrade Silently Broke GNOME Thumbnails for a Week — Ubuntu 24.04 bwrap AppArmor Fix</title>
+
+  <!-- SEO -->
+  <meta name="description" content="A routine apt upgrade broke GNOME thumbnails silently for 8 days on Ubuntu 24.04. Three root causes: stale gdk-pixbuf loader in memory, corrupt Tracker3 database, and bubblewrap (bwrap) sandboxing blocked by AppArmor. Includes the exact fix.">
+  <meta name="keywords" content="GNOME thumbnails not working, Ubuntu 24.04 thumbnails broken, Nautilus thumbnail creation failed, tracker3 reset, bwrap permission denied uid map, AppArmor unprivileged userns, heif-gdk-pixbuf upgrade, gnome-desktop ThumbnailFactory, kernel.apparmor_restrict_unprivileged_userns, thumbnail fail cache, EOG thumbnail creation failed">
+  <meta name="author" content="hellodk">
+  <meta name="article:published_time" content="2026-05-23">
+  <meta name="article:tag" content="Linux, GNOME, Ubuntu, Debugging, Thumbnails, AppArmor, Tracker3, bubblewrap">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="article">
+  <meta property="og:title"       content="How apt upgrade Silently Broke GNOME Thumbnails for a Week">
+  <meta property="og:description" content="Three root causes, one apt upgrade. A deep-dive into gdk-pixbuf loaders, Tracker3 corruption, and Ubuntu 24.04's AppArmor sandbox blocking bwrap — the silent killer of GNOME thumbnails.">
+  <meta property="og:locale"      content="en_US">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="How apt upgrade Silently Broke GNOME Thumbnails for a Week">
+  <meta name="twitter:description" content="Thumbnails dead after a routine update? Here's the actual root cause on Ubuntu 24.04: bwrap sandboxing blocked by AppArmor. Three commands to fix it permanently.">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F9FAFB;
+      --panel:     #FFFFFF;
+      --subtle:    #F3F4F6;
+      --text:      #111827;
+      --muted:     #4B5563;
+      --border:    #E5E7EB;
+      --success:   #16A34A;
+      --warning:   #D97706;
+      --error:     #DC2626;
+      --accent:      #2563EB;
+      --accent-lt:   #EFF6FF;
+      --accent-deep: #1E3A8A;
+      --purple:      #7C3AED;
+      --warn-deep:   #92400E;
+      --warn-lt:     #FFFBEB;
+      --info-lt:     #EFF6FF;
+      --code-bg:     #F0F9FF;
+      --code-surface:#F8FAFC;
+      --mono:      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans:      ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --radius:    12px;
+      --shadow:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.07), 0 2px 6px rgba(0,0,0,0.04);
+      --topbar-h:  60px;
+      --sidebar-w: 252px;
+    }
+
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+    /* ── App shell ── */
+    .app { min-height: 100vh; display: grid; grid-template-rows: var(--topbar-h) 1fr; }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #EFF6FF, #F5F3FF);
+      border: 1px solid var(--border);
+      display: grid; place-items: center;
+      font-size: 18px;
+    }
+    .brand-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); }
+    .brand-text span   { display: block; font-size: 12px; color: var(--muted); }
+    .topbar-meta { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--muted); }
+    .topbar-meta .tag {
+      background: var(--subtle); border: 1px solid var(--border);
+      color: var(--muted); font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .topbar-meta .tag.err { background: #FEF2F2; border-color: #FECACA; color: var(--error); }
+    .topbar-meta .tag.ok  { background: #F0FDF4; border-color: #BBF7D0; color: var(--success); }
+
+    /* ── Body layout ── */
+    .body { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: calc(100vh - var(--topbar-h)); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: sticky; top: var(--topbar-h); height: calc(100vh - var(--topbar-h));
+      overflow-y: auto; border-right: 1px solid var(--border);
+      background: var(--panel); padding: 24px 16px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .nav-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 0 8px; margin-bottom: 6px; }
+    .nav-link {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 10px 12px; border-radius: 8px; text-decoration: none;
+      transition: background .15s;
+    }
+    .nav-link:hover { background: var(--subtle); }
+    .nav-link.active { background: var(--accent-lt); }
+    .nav-link strong { font-size: 13px; font-weight: 600; color: var(--text); }
+    .nav-link span   { font-size: 12px; color: var(--muted); }
+    .nav-link.active strong { color: var(--accent); }
+
+    .kpi-mini {
+      background: var(--subtle); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+    }
+    .kpi-mini .label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .kpi-mini .val   { font-size: 26px; font-weight: 800; line-height: 1; margin-bottom: 2px; }
+    .kpi-mini .sub   { font-size: 11px; color: var(--muted); }
+    .kpi-mini.bad  .val { color: var(--error); }
+    .kpi-mini.warn .val { color: var(--warning); }
+    .kpi-mini.ok   .val { color: var(--success); }
+
+    /* ── Main content ── */
+    .main { padding: 40px 48px 96px; min-width: 0; }
+
+    /* ── Hero ── */
+    .hero {
+      padding-bottom: 40px; margin-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--accent-lt); color: var(--accent);
+      font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 999px; margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(24px, 3vw, 38px); font-weight: 800; line-height: 1.18;
+      letter-spacing: -0.4px; color: var(--text); margin-bottom: 16px;
+    }
+    .hero h1 .hl { color: var(--error); }
+    .hero .lead { font-size: 17px; color: var(--muted); max-width: 780px; line-height: 1.65; margin-bottom: 24px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; font-size: 13px; color: var(--muted); align-items: center; }
+    .hero-meta .mi { display: flex; align-items: center; gap: 6px; }
+
+    /* ── KPI row ── */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 48px; }
+    .kpi {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow);
+    }
+    .kpi .k-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+    .kpi .k-val   { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .kpi .k-sub   { font-size: 12px; color: var(--muted); }
+    .kpi.bad  .k-val { color: var(--error);   }
+    .kpi.warn .k-val { color: var(--warning); }
+    .kpi.ok   .k-val { color: var(--success); }
+    .kpi.blue .k-val { color: var(--accent);  }
+
+    /* ── TL;DR ── */
+    .tldr {
+      background: var(--accent-lt); border: 1px solid rgba(37,99,235,.18);
+      border-left: 4px solid var(--accent); border-radius: var(--radius);
+      padding: 20px 24px; margin-bottom: 48px;
+    }
+    .tldr-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin-bottom: 12px; }
+    .tldr ul { padding-left: 18px; }
+    .tldr li { color: var(--accent-deep); font-size: 15px; line-height: 1.6; margin-bottom: 8px; }
+    .tldr li:last-child { margin-bottom: 0; }
+    .tldr li strong { color: var(--accent); }
+
+    /* ── Sections ── */
+    section { margin-bottom: 64px; scroll-margin-top: calc(var(--topbar-h) + 24px); }
+    h2 { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .h2n { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0; }
+    h3 { font-size: 15px; font-weight: 600; color: var(--text); margin: 24px 0 10px; }
+    p  { color: var(--muted); margin-bottom: 14px; line-height: 1.68; }
+    p strong { color: var(--text); }
+
+    /* ── SVG Box ── */
+    .svg-box {
+      border: 1px solid var(--border); border-radius: 16px;
+      background: var(--panel); overflow: hidden;
+      box-shadow: var(--shadow-md); margin-bottom: 28px;
+    }
+    .svg-cap {
+      font-size: 13px; font-weight: 500; padding: 10px 18px;
+      border-bottom: 1px solid var(--border); color: var(--muted);
+      background: var(--subtle); display: flex; align-items: center; gap: 8px;
+    }
+    .svg-box > svg { width: 100%; height: auto; display: block; }
+    .legend {
+      display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+      padding: 10px 18px 12px; border-top: 1px solid var(--border);
+      background: var(--subtle); font-size: 13px; color: var(--muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; margin-right: 5px; }
+    .dok { background: var(--success); }
+    .derr{ background: var(--error); }
+    .dwrn{ background: var(--warning); }
+    .dbl { background: var(--accent); }
+    .dpu { background: var(--purple); }
+
+    /* ── Card ── */
+    .card { display: block; width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px 26px; margin-bottom: 20px; overflow: hidden; }
+    .card h3 { margin-top: 0; }
+    .card pre:last-child { margin-bottom: 0; }
+
+    /* ── Code ── */
+    pre {
+      background: #0F172A; color: #E2E8F0; border-radius: 10px;
+      padding: 20px 26px; font-family: var(--mono); font-size: 13px;
+      line-height: 1.8; overflow-x: auto; margin-bottom: 20px;
+    }
+    code {
+      font-family: var(--mono); font-size: 13px;
+      background: rgba(37,99,235,.07); border: 1px solid rgba(37,99,235,.18);
+      color: #1D4ED8; padding: 1px 6px; border-radius: 5px;
+    }
+    pre code { background: none; border: none; color: inherit; padding: 0; }
+    .kw  { color: #C084FC; }
+    .cm  { color: #64748B; }
+    .str { color: #34D399; }
+    .cmd { color: #60A5FA; }
+
+    /* ── Callout ── */
+    .callout { border-left: 4px solid var(--warning); background: var(--warn-lt); border-radius: 0 var(--radius) var(--radius) 0; padding: 16px 20px; margin-bottom: 20px; font-size: 15px; color: var(--warn-deep); }
+    .callout strong { color: var(--warn-deep); }
+    .callout.info  { border-left-color: var(--accent); background: var(--accent-lt); color: var(--accent-deep); }
+    .callout.info strong { color: var(--accent-deep); }
+    .callout.error { border-left-color: var(--error); background: #FEF2F2; color: #7F1D1D; }
+    .callout.error strong { color: #991B1B; }
+
+    /* ── Timeline ── */
+    .timeline { position: relative; padding-left: 36px; margin-bottom: 8px; }
+    .timeline::before { content:''; position:absolute; left:11px; top:8px; bottom:0; width:2px; background:var(--border); }
+    .tl-item { position:relative; margin-bottom:28px; }
+    .tl-item::before { content:''; position:absolute; left:-29px; top:7px; width:14px; height:14px; border-radius:50%; background:var(--panel); border:2px solid var(--border); }
+    .tl-item.bad::before  { border-color:var(--error);   background:#FEE2E2; }
+    .tl-item.warn::before { border-color:var(--warning); background:#FEF3C7; }
+    .tl-item.ok::before   { border-color:var(--success); background:#DCFCE7; }
+    .tl-date  { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+    .tl-title { font-size:15px; font-weight:600; color:var(--text); margin-bottom:4px; }
+    .tl-desc  { font-size:14px; color:var(--muted); margin:0; }
+
+    /* ── Step grid ── */
+    .step-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:28px; }
+    .step-card { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow); }
+    .step-num   { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin-bottom:8px; }
+    .step-title { font-size:15px; font-weight:600; color:var(--text); margin-bottom:6px; }
+    .step-desc  { font-size:13px; color:var(--muted); margin:0; }
+
+    @media (prefers-reduced-motion: reduce) { .smil { display:none; } }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Topbar ── -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🖼</div>
+      <div class="brand-text">
+        <strong>GNOME Thumbnail Failure — Post-mortem</strong>
+        <span>Ubuntu 24.04 · GNOME 46 · Nautilus · Tracker3</span>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <span>23 May 2026</span>
+      <span>·</span>
+      <span>7 min read</span>
+      <span class="tag err">heif-gdk-pixbuf</span>
+      <span class="tag err">Tracker3 corrupt</span>
+      <span class="tag err">bwrap · AppArmor</span>
+      <span class="tag ok">Fixed ✓</span>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div>
+        <div class="nav-label">Sections</div>
+        <a class="nav-link active" href="#intro">
+          <strong>Overview</strong><span>Pipeline + TL;DR</span>
+        </a>
+        <a class="nav-link" href="#timeline">
+          <strong>Timeline</strong><span>Chain of failure</span>
+        </a>
+        <a class="nav-link" href="#rc1">
+          <strong>Root Cause 1</strong><span>gdk-pixbuf stale loader</span>
+        </a>
+        <a class="nav-link" href="#rc2">
+          <strong>Root Cause 2</strong><span>Tracker3 corruption</span>
+        </a>
+        <a class="nav-link" href="#spiral">
+          <strong>Fail Cache Spiral</strong><span>Why it compounds</span>
+        </a>
+        <a class="nav-link" href="#fix">
+          <strong>The Fix</strong><span>3 commands</span>
+        </a>
+        <a class="nav-link" href="#bwrap">
+          <strong>Root Cause 3</strong><span>bwrap · AppArmor block</span>
+        </a>
+        <a class="nav-link" href="#prevention">
+          <strong>Prevention</strong><span>Long-term architecture</span>
+        </a>
+      </div>
+
+      <div>
+        <div class="nav-label">Stats</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="kpi-mini bad">
+            <div class="label">Fail entries (peak)</div>
+            <div class="val">7,907</div>
+            <div class="sub">accrued overnight</div>
+          </div>
+          <div class="kpi-mini warn">
+            <div class="label">Days broken</div>
+            <div class="val">8</div>
+            <div class="sub">May 15 → May 23</div>
+          </div>
+          <div class="kpi-mini bad">
+            <div class="label">Root causes</div>
+            <div class="val">3</div>
+            <div class="sub">loader · DB · bwrap</div>
+          </div>
+          <div class="kpi-mini ok">
+            <div class="label">Fix time</div>
+            <div class="val">&lt;10s</div>
+            <div class="sub">3 commands</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="main">
+
+      <!-- Hero -->
+      <div class="hero" id="intro">
+        <div class="eyebrow">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Post-mortem · Linux · GNOME
+        </div>
+        <h1>How a Routine <span class="hl">apt upgrade</span> Silently Broke<br>GNOME Thumbnails for a Week</h1>
+        <p class="lead">A May 15 gdk-pixbuf security patch rebuilt the loader cache on disk while Nautilus was still running with the old one in memory. Tracker3's database went corrupt. And underneath both of those — Ubuntu 24.04's AppArmor was silently blocking <code>bwrap</code>, the sandbox that <code>libgnome-desktop 44</code> wraps around every thumbnailer call. Three independent failures. Zero user-visible errors. Eight days of broken thumbnails.</p>
+        <div class="hero-meta">
+          <span class="mi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 23 May 2026</span>
+          <span class="mi"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 7 min read</span>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="kpi-row">
+        <div class="kpi bad">
+          <div class="k-label">Fail cache entries</div>
+          <div class="k-val">7,907</div>
+          <div class="k-sub">at peak, May 23 morning</div>
+        </div>
+        <div class="kpi warn">
+          <div class="k-label">Root causes</div>
+          <div class="k-val">3</div>
+          <div class="k-sub">loader · DB · bwrap sandbox</div>
+        </div>
+        <div class="kpi blue">
+          <div class="k-label">Trigger event</div>
+          <div class="k-val">May 15</div>
+          <div class="k-sub">heif-gdk-pixbuf upgrade</div>
+        </div>
+        <div class="kpi ok">
+          <div class="k-label">Fix commands</div>
+          <div class="k-val">4</div>
+          <div class="k-sub">including sysctl for bwrap</div>
+        </div>
+      </div>
+
+      <!-- TL;DR -->
+      <div class="tldr">
+        <div class="tldr-title">TL;DR — Three sentences</div>
+        <ul>
+          <li><strong>Root cause 1:</strong> <code>heif-gdk-pixbuf</code> upgraded on May 15 rewrote the gdk-pixbuf loaders cache on disk, but the already-running Nautilus process held a stale copy in memory — silently misrouting thumbnail requests.</li>
+          <li><strong>Root cause 2:</strong> The Tracker3 SQLite file at <code>~/.cache/tracker3/files/meta.db</code> became corrupt; in GNOME 46 this severs the thumbnail job queue, so every request immediately wrote a permanent fail record.</li>
+          <li><strong>Root cause 3 (the real blocker):</strong> <code>libgnome-desktop 44</code> now runs every thumbnailer inside a <code>bwrap</code> sandbox. Ubuntu 24.04 blocks unprivileged user namespaces via AppArmor — <code>bwrap</code> exits with "Permission denied" on every single call, so no thumbnail ever generates regardless of how healthy Tracker3 is.</li>
+          <li><strong>Fix:</strong> <code>tracker3 reset -s -r</code> → clear <code>~/.cache/thumbnails/fail/</code> → restart Nautilus → <code>sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0</code> (make permanent via <code>/etc/sysctl.d/</code>). Done.</li>
+        </ul>
+      </div>
+
+      <!-- ── Section 1: Pipeline ── -->
+      <section id="intro-pipeline">
+        <h2><span class="h2n">①</span> How GNOME Thumbnail Generation Works</h2>
+
+        <p>There are more moving parts in the thumbnail pipeline than most users realise. Understanding them makes the failure obvious in hindsight.</p>
+
+        <div class="svg-box">
+          <div class="svg-cap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Animation — normal thumbnail pipeline from file on disk to Nautilus display
+          </div>
+          <svg viewBox="0 0 1100 270" role="img" aria-label="GNOME thumbnail pipeline">
+            <defs>
+              <marker id="a0" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#4B5563"/></marker>
+              <marker id="a1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#16A34A"/></marker>
+            </defs>
+
+            <!-- Step labels row (top) -->
+            <text x="110" y="28" text-anchor="middle" fill="#4B5563" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">① Browse</text>
+            <text x="328" y="28" text-anchor="middle" fill="#4B5563" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">② Render PNG</text>
+            <text x="556" y="28" text-anchor="middle" fill="#4B5563" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">③ Queue Job</text>
+            <text x="784" y="28" text-anchor="middle" fill="#4B5563" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">④ Write to Cache</text>
+            <text x="996" y="28" text-anchor="middle" fill="#4B5563" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">⑤ Display</text>
+
+            <!-- Node 1: File -->
+            <rect x="30" y="44" width="160" height="96" rx="12" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+            <text x="110" y="78"  text-anchor="middle" fill="#1D4ED8" font-size="14" font-weight="700" font-family="ui-sans-serif,sans-serif">File on disk</text>
+            <text x="110" y="98"  text-anchor="middle" fill="#3B82F6" font-size="12" font-family="ui-monospace,monospace">image / video / PDF</text>
+            <text x="110" y="116" text-anchor="middle" fill="#93C5FD" font-size="12" font-family="ui-sans-serif,sans-serif">any format</text>
+
+            <!-- Arrow 1 -->
+            <line x1="191" y1="92" x2="236" y2="92" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#a0)"/>
+
+            <!-- Node 2: Thumbnailer -->
+            <rect x="238" y="36" width="180" height="112" rx="12" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1.5"/>
+            <text x="328" y="70"  text-anchor="middle" fill="#6D28D9" font-size="14" font-weight="700" font-family="ui-sans-serif,sans-serif">Thumbnailer</text>
+            <text x="328" y="90"  text-anchor="middle" fill="#7C3AED" font-size="12" font-family="ui-monospace,monospace">gdk-pixbuf</text>
+            <text x="328" y="107" text-anchor="middle" fill="#7C3AED" font-size="12" font-family="ui-monospace,monospace">ffmpegthumbnailer</text>
+            <text x="328" y="124" text-anchor="middle" fill="#7C3AED" font-size="12" font-family="ui-monospace,monospace">heif-thumbnailer</text>
+
+            <!-- Arrow 2 -->
+            <line x1="419" y1="92" x2="464" y2="92" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#a0)"/>
+
+            <!-- Node 3: Tracker3 (highlighted — key to failure) -->
+            <rect x="466" y="36" width="180" height="112" rx="12" fill="#ECFDF5" stroke="#34D399" stroke-width="2"/>
+            <text x="556" y="70"  text-anchor="middle" fill="#065F46" font-size="14" font-weight="700" font-family="ui-sans-serif,sans-serif">Tracker3</text>
+            <text x="556" y="90"  text-anchor="middle" fill="#059669" font-size="12" font-family="ui-monospace,monospace">tracker-miner-fs-3</text>
+            <text x="556" y="107" text-anchor="middle" fill="#059669" font-size="12" font-family="ui-sans-serif,sans-serif">thumbnail job queue</text>
+            <rect x="490" y="116" width="132" height="20" rx="5" fill="#059669"/>
+            <text x="556" y="130" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="ui-sans-serif,sans-serif">NEW in GNOME 46</text>
+
+            <!-- Arrow 3 -->
+            <line x1="647" y1="92" x2="692" y2="92" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#a0)"/>
+
+            <!-- Node 4: Factory -->
+            <rect x="694" y="44" width="180" height="96" rx="12" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1.5"/>
+            <text x="784" y="78"  text-anchor="middle" fill="#C2410C" font-size="14" font-weight="700" font-family="ui-sans-serif,sans-serif">Thumbnail Factory</text>
+            <text x="784" y="97"  text-anchor="middle" fill="#EA580C" font-size="12" font-family="ui-monospace,monospace">gnome-thumbnail-factory</text>
+            <text x="784" y="115" text-anchor="middle" fill="#EA580C" font-size="12" font-family="ui-sans-serif,sans-serif">writes PNG to cache</text>
+
+            <!-- Arrow 4 -->
+            <line x1="875" y1="92" x2="920" y2="92" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#a0)"/>
+
+            <!-- Node 5: Nautilus -->
+            <rect x="922" y="48" width="148" height="88" rx="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1.5"/>
+            <text x="996" y="82"  text-anchor="middle" fill="#374151" font-size="28">📁</text>
+            <text x="996" y="108" text-anchor="middle" fill="#374151" font-size="14" font-weight="700" font-family="ui-sans-serif,sans-serif">Nautilus</text>
+            <text x="996" y="125" text-anchor="middle" fill="#4B5563" font-size="12" font-family="ui-sans-serif,sans-serif">Renders Thumbnail</text>
+
+            <!-- Animated packet with pulse ring -->
+            <circle class="smil" r="12" fill="none" stroke="#2563EB" stroke-width="1" opacity="0">
+              <animate attributeName="cx" dur="3.5s" repeatCount="indefinite" values="110;328;556;784;996" keyTimes="0;0.22;0.47;0.7;0.9" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+              <animate attributeName="cy" dur="3.5s" repeatCount="indefinite" values="92;92;92;92;92"/>
+              <animate attributeName="r"   dur="3.5s" repeatCount="indefinite" values="6;18;6;18;6"/>
+              <animate attributeName="opacity" dur="3.5s" repeatCount="indefinite" values="0;0.4;0;0.4;0" keyTimes="0;0.1;0.3;0.6;1"/>
+              <animate attributeName="stroke" dur="3.5s" repeatCount="indefinite" values="#2563EB;#7C3AED;#059669;#EA580C;#374151"/>
+            </circle>
+            <circle class="smil" r="7" fill="#2563EB">
+              <animate attributeName="cx" dur="3.5s" repeatCount="indefinite" values="110;328;556;784;996" keyTimes="0;0.22;0.47;0.7;0.9" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+              <animate attributeName="cy" dur="3.5s" repeatCount="indefinite" values="92;92;92;92;92"/>
+              <animate attributeName="opacity" dur="3.5s" repeatCount="indefinite" values="0;1;1;1;1;0" keyTimes="0;0.04;0.22;0.8;0.93;1"/>
+              <animate attributeName="fill" dur="3.5s" repeatCount="indefinite" values="#2563EB;#7C3AED;#059669;#EA580C;#374151"/>
+            </circle>
+
+            <!-- Fail path (separate) -->
+            <path d="M556 150 L556 182" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#a0)"/>
+            <rect x="456" y="183" width="200" height="52" rx="10" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+            <text x="556" y="205" text-anchor="middle" fill="#991B1B" font-size="13" font-weight="600" font-family="ui-sans-serif,sans-serif">Failure path</text>
+            <text x="556" y="223" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-monospace,monospace">→ fail/ written, never retried</text>
+
+            <!-- Tracker annotation -->
+            <text x="556" y="254" text-anchor="middle" fill="#059669" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">▲  Tracker3 breaks here → all thumbnails stall</text>
+          </svg>
+          <div class="legend">
+            <span><span class="dot dbl"></span>packet travelling through pipeline</span>
+            <span><span class="dot dok"></span>success → cached in large/</span>
+            <span><span class="dot derr"></span>failure → written to fail/</span>
+            <span><span class="dot dwrn"></span>Tracker3 (GNOME 46 addition)</span>
+          </div>
+        </div>
+
+        <p>The critical detail: <strong>in GNOME 46, Nautilus routes thumbnail job requests through Tracker3</strong>. This is a newer coupling that didn't exist in GNOME 42/43. If Tracker's SQLite database can't be opened, the entire queue stalls — and every failed request gets written to <code>~/.cache/thumbnails/fail/</code> as a permanent block.</p>
+      </section>
+
+      <!-- ── Section 2: Timeline ── -->
+      <section id="timeline">
+        <h2><span class="h2n">②</span> The Timeline of Failure</h2>
+
+        <div class="timeline">
+          <div class="tl-item warn">
+            <div class="tl-date">8 May 2026 · 07:39</div>
+            <div class="tl-title">gnome-shell → 46.0-0ubuntu6~24.04.14</div>
+            <p class="tl-desc">Routine security update. No thumbnail impact on its own — but this version tightens the Tracker3 integration.</p>
+          </div>
+          <div class="tl-item bad">
+            <div class="tl-date">15 May 2026 · 08:05</div>
+            <div class="tl-title">heif-gdk-pixbuf + heif-thumbnailer upgraded</div>
+            <p class="tl-desc">Post-install hook rewrites <code>loaders.cache</code> on disk. Nautilus is already running and never reads it again until restarted. Thumbnail generation for HEIF and related formats begins silently failing with no user-visible error.</p>
+          </div>
+          <div class="tl-item bad">
+            <div class="tl-date">Between May 15–22</div>
+            <div class="tl-title">Tracker3 database becomes corrupt</div>
+            <p class="tl-desc"><code>~/.cache/tracker3/files/meta.db</code> can no longer be opened. Journal: <em>"Could not open sqlite3 database: unable to open database file."</em> All thumbnail job requests now return a D-Bus error and immediately write fail entries. Fail cache grows silently in the background.</p>
+          </div>
+          <div class="tl-item warn">
+            <div class="tl-date">22 May · First diagnosis</div>
+            <div class="tl-title">1,754 fail entries found — all external drives</div>
+            <p class="tl-desc"><code>show-image-thumbnails</code> changed to <code>always</code>, fail cache cleared. Local thumbnails recover briefly, but Tracker3 is still broken and refills the cache overnight.</p>
+          </div>
+          <div class="tl-item bad">
+            <div class="tl-date">23 May · 07:54 — morning</div>
+            <div class="tl-title">Fail cache back to 7,907 entries</div>
+            <p class="tl-desc">EOG also reporting "Thumbnail creation failed." dconf database recreated (indicates a background GNOME settings event). Tracker3 still throwing database errors on every Nautilus browse.</p>
+          </div>
+          <div class="tl-item warn">
+            <div class="tl-date">23 May · Partial fix</div>
+            <div class="tl-title">tracker3 reset + fail cache cleared + Nautilus restarted</div>
+            <p class="tl-desc">Tracker3 rebuilds clean. Fail cache wiped. But thumbnails still fail — EOG logging "Thumbnail creation failed" continuously. Root cause not yet fully identified.</p>
+          </div>
+          <div class="tl-item bad">
+            <div class="tl-date">23 May · Deeper diagnosis</div>
+            <div class="tl-title">bwrap sandbox identified as the real blocker</div>
+            <p class="tl-desc"><code>GnomeDesktopThumbnailFactory</code> tested directly via Python — throws <code>g-spawn-exit-error-quark: Child process exited with code 1</code>. Traced to <code>bwrap: setting up uid map: Permission denied</code>. Ubuntu 24.04 AppArmor restricts unprivileged user namespaces; <code>bwrap</code> needs them to create its sandbox around every thumbnailer call.</p>
+          </div>
+          <div class="tl-item ok">
+            <div class="tl-date">23 May · Full fix applied</div>
+            <div class="tl-title">sysctl kernel.apparmor_restrict_unprivileged_userns=0</div>
+            <p class="tl-desc">Unprivileged user namespaces enabled. <code>bwrap</code> can now create sandboxes. Fail cache cleared. Thumbnails generate for all file types — images, videos, PDFs. Fix made permanent via <code>/etc/sysctl.d/60-userns.conf</code>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 3: Root cause 1 ── -->
+      <section id="rc1">
+        <h2><span class="h2n">③</span> Root Cause 1 — gdk-pixbuf Loader Hot-Swap</h2>
+
+        <p>When <code>apt upgrade</code> installs a new <code>heif-gdk-pixbuf</code>, the post-install script calls <code>update-gdk-pixbuf-loaders</code>, which rewrites the loaders cache file on disk. This is correct behaviour. The problem is that any process that already read that file at startup gets no notification — it keeps its in-memory copy unchanged.</p>
+
+        <div class="svg-box">
+          <div class="svg-cap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Animation — on-disk loader cache (updated) vs in-memory state (stale)
+          </div>
+          <svg viewBox="0 0 1100 240" role="img" aria-label="gdk-pixbuf stale loader mismatch">
+            <defs>
+              <marker id="adiv" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#D97706"/></marker>
+            </defs>
+
+            <!-- On-disk panel -->
+            <rect x="30" y="20" width="460" height="200" rx="14" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.5"/>
+            <text x="260" y="48" text-anchor="middle" fill="#166534" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">On disk — updated 15 May 08:05</text>
+            <text x="260" y="67" text-anchor="middle" fill="#16A34A" font-size="12" font-family="ui-monospace,monospace">/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache</text>
+
+            <rect x="52" y="80" width="416" height="26" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+            <text x="66" y="98" fill="#166534" font-size="12" font-family="ui-monospace,monospace">image/jpeg   →  gdk-pixbuf      2.42.10+dfsg  ✓</text>
+            <rect x="52" y="112" width="416" height="26" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+            <text x="66" y="130" fill="#166534" font-size="12" font-family="ui-monospace,monospace">image/heic   →  heif-gdk-pixbuf 1.17.6        ✓  ← updated</text>
+            <rect x="52" y="144" width="416" height="26" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+            <text x="66" y="162" fill="#166534" font-size="12" font-family="ui-monospace,monospace">image/webp   →  webp-pixbuf     0.0.5         ✓</text>
+            <rect x="52" y="176" width="416" height="26" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+            <text x="66" y="194" fill="#166534" font-size="12" font-family="ui-monospace,monospace">video/mp4    →  ffmpegthumbnailer 2.2.2        ✓</text>
+
+            <text x="260" y="216" text-anchor="middle" fill="#16A34A" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">✓  correct — freshly written by post-install hook</text>
+
+            <!-- Divergence arrow -->
+            <path d="M492 120 Q546 120 546 120 Q600 120 608 120" stroke="#D97706" stroke-width="2" stroke-dasharray="6,3" fill="none" marker-end="url(#adiv)"/>
+            <text x="550" y="108" text-anchor="middle" fill="#D97706" font-size="12" font-weight="700" font-family="ui-sans-serif,sans-serif">diverged</text>
+            <text x="550" y="125" text-anchor="middle" fill="#D97706" font-size="11" font-family="ui-sans-serif,sans-serif">no restart</text>
+
+            <!-- In-memory panel -->
+            <rect x="610" y="20" width="460" height="200" rx="14" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+            <text x="840" y="48" text-anchor="middle" fill="#991B1B" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">In memory — Nautilus (already running)</text>
+            <text x="840" y="67" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-sans-serif,sans-serif">loaded at launch · never reloaded at runtime</text>
+
+            <rect x="632" y="80" width="416" height="26" rx="6" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
+            <text x="646" y="98" fill="#991B1B" font-size="12" font-family="ui-monospace,monospace">image/jpeg   →  gdk-pixbuf      2.42.10+dfsg</text>
+            <rect x="632" y="112" width="416" height="26" rx="6" fill="#FECACA" stroke="#F87171" stroke-width="1.5"/>
+            <text x="646" y="130" fill="#B91C1C" font-size="12" font-family="ui-monospace,monospace">image/heic   →  heif-gdk-pixbuf 1.17.4.2     ← STALE</text>
+            <!-- stale badge -->
+            <rect x="978" y="116" width="44" height="17" rx="4" fill="#DC2626"/>
+            <text x="1000" y="129" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="ui-sans-serif,sans-serif">STALE</text>
+            <rect x="632" y="144" width="416" height="26" rx="6" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
+            <text x="646" y="162" fill="#991B1B" font-size="12" font-family="ui-monospace,monospace">image/webp   →  webp-pixbuf     0.0.5</text>
+            <rect x="632" y="176" width="416" height="26" rx="6" fill="#FEE2E2" stroke="#FCA5A5" stroke-width="1"/>
+            <text x="646" y="194" fill="#991B1B" font-size="12" font-family="ui-monospace,monospace">video/mp4    →  ffmpegthumbnailer 2.2.2</text>
+
+            <text x="840" y="216" text-anchor="middle" fill="#DC2626" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">✗  heif requests fail silently — old ABI, new binary</text>
+
+            <!-- Blinking stale indicator -->
+            <circle class="smil" cx="960" cy="125" r="5" fill="#DC2626">
+              <animate attributeName="opacity" dur="1.2s" repeatCount="indefinite" values="1;0.15;1"/>
+            </circle>
+          </svg>
+          <div class="legend">
+            <span><span class="dot dok"></span>on-disk — correct after upgrade</span>
+            <span><span class="dot derr"></span>in-memory — stale, never reloaded</span>
+            <span><span class="dot dwrn"></span>diverged at upgrade, fixed only by restart</span>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Why silent?</strong> gdk-pixbuf doesn't crash when a loader version is mismatched — it returns a null pixbuf and the thumbnail factory silently writes the result to the fail cache. No desktop notification, no terminal error, no log entry the average user would see.
+        </div>
+      </section>
+
+      <!-- ── Section 4: Root cause 2 ── -->
+      <section id="rc2">
+        <h2><span class="h2n">④</span> Root Cause 2 — Tracker3 Database Corruption</h2>
+
+        <p>In GNOME 46, Nautilus tightly integrates with Tracker3 for file search — and, less obviously, for the thumbnail job queue. When Nautilus needs a thumbnail it doesn't have cached, it posts the request via D-Bus to Tracker3. If Tracker can't open its SQLite database, the request immediately returns an error and a fail entry is written.</p>
+
+        <div class="svg-box">
+          <div class="svg-cap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Animation — Nautilus ↔ Tracker3 D-Bus failure loop and fail counter
+          </div>
+          <svg viewBox="0 0 1100 260" role="img" aria-label="Tracker3 database failure loop">
+            <defs>
+              <marker id="aerr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#DC2626"/></marker>
+              <marker id="awrn" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#D97706"/></marker>
+            </defs>
+
+            <!-- Nautilus -->
+            <rect x="30" y="60" width="200" height="120" rx="14" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+            <text x="130" y="92"  text-anchor="middle" fill="#1D4ED8" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">Nautilus</text>
+            <text x="130" y="113" text-anchor="middle" fill="#3B82F6" font-size="12" font-family="ui-sans-serif,sans-serif">sends thumbnail request</text>
+            <text x="130" y="131" text-anchor="middle" fill="#3B82F6" font-size="12" font-family="ui-sans-serif,sans-serif">via D-Bus to Tracker3</text>
+            <text x="130" y="168" text-anchor="middle" fill="#93C5FD" font-size="12" font-family="ui-sans-serif,sans-serif">On Every Browse</text>
+
+            <!-- Forward arrow + label -->
+            <line x1="232" y1="108" x2="309" y2="108" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#a0)"/>
+            <text x="270" y="97" text-anchor="middle" fill="#4B5563" font-size="12" font-family="ui-sans-serif,sans-serif">D-Bus Call</text>
+
+            <!-- Tracker3 -->
+            <rect x="312" y="36" width="250" height="168" rx="14" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+            <text x="437" y="68"  text-anchor="middle" fill="#991B1B" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">Tracker3</text>
+            <text x="437" y="88"  text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-monospace,monospace">tracker-miner-fs-3</text>
+            <rect x="332" y="100" width="210" height="44" rx="8" fill="#FEE2E2" stroke="#F87171" stroke-width="1.5"/>
+            <text x="437" y="118" text-anchor="middle" fill="#B91C1C" font-size="13" font-weight="700" font-family="ui-sans-serif,sans-serif">meta.db — CORRUPT</text>
+            <text x="437" y="136" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-monospace,monospace">unable to open database</text>
+            <text x="437" y="174" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-sans-serif,sans-serif">returns DBUS_ERROR immediately</text>
+            <text x="437" y="192" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-sans-serif,sans-serif">no thumbnail generated</text>
+
+            <!-- Error arrow back -->
+            <line x1="311" y1="132" x2="234" y2="132" stroke="#DC2626" stroke-width="1.5" marker-end="url(#aerr)"/>
+            <text x="270" y="152" text-anchor="middle" fill="#DC2626" font-size="12" font-weight="700" font-family="ui-sans-serif,sans-serif">DBUS_ERROR</text>
+
+            <!-- Arrow to fail cache -->
+            <line x1="564" y1="108" x2="634" y2="108" stroke="#D97706" stroke-width="1.5" marker-end="url(#awrn)"/>
+            <text x="598" y="125" text-anchor="middle" fill="#D97706" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">Write Fail Entry</text>
+
+            <!-- Fail cache -->
+            <rect x="636" y="44" width="260" height="152" rx="14" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1.5"/>
+            <text x="766" y="76"  text-anchor="middle" fill="#92400E" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">Fail Cache</text>
+            <text x="766" y="97"  text-anchor="middle" fill="#D97706" font-size="12" font-family="ui-monospace,monospace">~/.cache/thumbnails/</text>
+            <text x="766" y="113" text-anchor="middle" fill="#D97706" font-size="12" font-family="ui-monospace,monospace">fail/gnome-thumbnail-factory/</text>
+            <text x="766" y="140" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600" font-family="ui-sans-serif,sans-serif">entries accrued:</text>
+
+            <!-- Animated counter using multiple text + opacity (no textContent SMIL) -->
+            <text x="766" y="162" text-anchor="middle" fill="#DC2626" font-size="16" font-weight="800" font-family="ui-monospace,monospace" class="smil">1,754
+              <animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="1;1;0;0;0;0" keyTimes="0;0.2;0.28;0.6;0.92;1"/>
+            </text>
+            <text x="766" y="162" text-anchor="middle" fill="#DC2626" font-size="16" font-weight="800" font-family="ui-monospace,monospace" class="smil" opacity="0">3,891
+              <animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.28;0.36;0.58;0.66;1"/>
+            </text>
+            <text x="766" y="162" text-anchor="middle" fill="#DC2626" font-size="16" font-weight="800" font-family="ui-monospace,monospace" class="smil" opacity="0">7,907
+              <animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="0;0;0;0;1;0" keyTimes="0;0.66;0.72;0.76;0.82;1"/>
+            </text>
+
+            <text x="766" y="184" text-anchor="middle" fill="#D97706" font-size="12" font-family="ui-sans-serif,sans-serif">permanent — never retried</text>
+
+            <!-- Journal error box -->
+            <rect x="930" y="44" width="150" height="152" rx="12" fill="#EFF6FF" stroke="#BAE6FD" stroke-width="1.5"/>
+            <text x="1005" y="72"  text-anchor="middle" fill="#0369A1" font-size="13" font-weight="700" font-family="ui-sans-serif,sans-serif">journalctl</text>
+            <text x="1005" y="90"  text-anchor="middle" fill="#0284C7" font-size="11" font-family="ui-sans-serif,sans-serif">--user errors</text>
+            <rect x="944" y="100" width="122" height="84" rx="6" fill="#F9FAFB" stroke="#E2E8F0" stroke-width="1"/>
+            <text x="950"  y="116" fill="#0369A1" font-size="11" font-family="ui-monospace,monospace">nautilus[…]:</text>
+            <text x="950"  y="132" fill="#DC2626" font-size="11" font-family="ui-monospace,monospace">Could not</text>
+            <text x="950"  y="148" fill="#DC2626" font-size="11" font-family="ui-monospace,monospace">open sqlite3</text>
+            <text x="950"  y="164" fill="#DC2626" font-size="11" font-family="ui-monospace,monospace">meta.db</text>
+
+            <!-- Blinking error pulse -->
+            <circle class="smil" cx="437" cy="120" r="6" fill="none" stroke="#DC2626" stroke-width="2">
+              <animate attributeName="r"       dur="1.4s" repeatCount="indefinite" values="6;18;6"/>
+              <animate attributeName="opacity" dur="1.4s" repeatCount="indefinite" values="0.9;0;0.9"/>
+            </circle>
+
+            <!-- Request packet bouncing back -->
+            <circle class="smil" r="6" fill="#2563EB" opacity="0">
+              <animate attributeName="cx"      dur="2.8s" repeatCount="indefinite" values="130;437;130" keyTimes="0;0.38;0.72"/>
+              <animate attributeName="cy"      dur="2.8s" repeatCount="indefinite" values="108;108;132" keyTimes="0;0.38;0.72"/>
+              <animate attributeName="fill"    dur="2.8s" repeatCount="indefinite" values="#2563EB;#DC2626;#DC2626" keyTimes="0;0.38;1"/>
+              <animate attributeName="opacity" dur="2.8s" repeatCount="indefinite" values="0;0.95;0.95;0" keyTimes="0;0.05;0.68;0.72"/>
+            </circle>
+          </svg>
+          <div class="legend">
+            <span><span class="dot dbl"></span>thumbnail request</span>
+            <span><span class="dot derr"></span>D-Bus error (corrupt DB)</span>
+            <span><span class="dot dwrn"></span>fail entry written — permanent, never retried</span>
+          </div>
+        </div>
+
+        <div class="callout error">
+          <strong>The compounding effect:</strong> Nautilus runs as a background <code>--gapplication-service</code> daemon even between user sessions. With Tracker3 broken, every background file-monitoring event tried to generate thumbnails, failed, and wrote fail entries — growing from 1,754 to 7,907 entries overnight without the user doing anything.
+        </div>
+      </section>
+
+      <!-- ── Section 5: Fail spiral ── -->
+      <section id="spiral">
+        <h2><span class="h2n">⑤</span> The Fail Cache Death Spiral</h2>
+        <p>The fail cache is designed as a performance optimisation: don't waste CPU retrying files that can never be thumbnailed. But when the failure reason is transient (a broken DB, a stale loader), the optimisation becomes a trap.</p>
+
+        <div class="svg-box">
+          <div class="svg-cap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+            Animation — the retry-block loop and why only deleting fail/ escapes it
+          </div>
+          <svg viewBox="0 0 1100 310" role="img" aria-label="Fail cache death spiral">
+            <defs>
+              <marker id="aloop"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#DC2626"/></marker>
+              <marker id="aescape" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#16A34A"/></marker>
+            </defs>
+
+            <!-- Loop label (well above boxes) -->
+            <rect x="50" y="14" width="580" height="26" rx="6" fill="#FEF2F2" stroke="#FECACA" stroke-width="1"/>
+            <text x="340" y="31" text-anchor="middle" fill="#DC2626" font-size="12" font-weight="700" font-family="ui-sans-serif,sans-serif">every subsequent browse → same result — forever, until fail/ is deleted</text>
+
+            <!-- Loop back arrow (above boxes) -->
+            <path d="M546 100 C546 52, 110 52, 110 100" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="7,3" fill="none" marker-end="url(#aloop)"/>
+
+            <!-- Step 1: Browse -->
+            <rect x="30"  y="100" width="160" height="90" rx="12" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1.5"/>
+            <text x="110" y="132" text-anchor="middle" fill="#1D4ED8" font-size="14" font-weight="600" font-family="ui-sans-serif,sans-serif">Browse folder</text>
+            <text x="110" y="152" text-anchor="middle" fill="#3B82F6" font-size="12" font-family="ui-sans-serif,sans-serif">Nautilus requests</text>
+            <text x="110" y="168" text-anchor="middle" fill="#3B82F6" font-size="12" font-family="ui-sans-serif,sans-serif">thumbnail for file</text>
+
+            <!-- Arrow 1→2 -->
+            <line x1="191" y1="145" x2="236" y2="145" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#a0)"/>
+
+            <!-- Step 2: Check cache -->
+            <rect x="238" y="100" width="168" height="90" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+            <text x="322" y="132" text-anchor="middle" fill="#374151" font-size="14" font-weight="600" font-family="ui-sans-serif,sans-serif">Check fail cache</text>
+            <text x="322" y="152" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">MD5 of file URI</text>
+            <text x="322" y="168" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">looked up in fail/</text>
+
+            <!-- MISS path down -->
+            <line x1="322" y1="191" x2="322" y2="234" stroke="#D97706" stroke-width="1.5" marker-end="url(#awrn)"/>
+            <text x="338" y="218" fill="#D97706" font-size="12" font-weight="600" font-family="ui-sans-serif,sans-serif">MISS</text>
+
+            <!-- MISS result box -->
+            <rect x="234" y="236" width="176" height="52" rx="10" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1.5"/>
+            <text x="322" y="258" text-anchor="middle" fill="#92400E" font-size="12" font-family="ui-sans-serif,sans-serif">Try generate →</text>
+            <text x="322" y="274" text-anchor="middle" fill="#D97706" font-size="12" font-family="ui-sans-serif,sans-serif">fails → new fail entry</text>
+
+            <!-- HIT path right -->
+            <line x1="407" y1="145" x2="452" y2="145" stroke="#DC2626" stroke-width="1.5" marker-end="url(#aloop)"/>
+            <text x="429" y="136" text-anchor="middle" fill="#DC2626" font-size="12" font-weight="700" font-family="ui-sans-serif,sans-serif">HIT</text>
+
+            <!-- Step 3: Skip -->
+            <rect x="454" y="100" width="188" height="90" rx="12" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+            <text x="548" y="130" text-anchor="middle" fill="#991B1B" font-size="14" font-weight="600" font-family="ui-sans-serif,sans-serif">Skip silently</text>
+            <text x="548" y="150" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-sans-serif,sans-serif">no thumbnail shown</text>
+            <text x="548" y="168" text-anchor="middle" fill="#DC2626" font-size="12" font-family="ui-sans-serif,sans-serif">no error, no notification</text>
+
+            <!-- Escape arrow -->
+            <line x1="643" y1="145" x2="696" y2="145" stroke="#16A34A" stroke-width="2" marker-end="url(#aescape)"/>
+            <text x="668" y="134" text-anchor="middle" fill="#16A34A" font-size="12" font-weight="700" font-family="ui-sans-serif,sans-serif">only</text>
+            <text x="668" y="150" text-anchor="middle" fill="#16A34A" font-size="12" font-weight="700" font-family="ui-sans-serif,sans-serif">escape</text>
+
+            <!-- Solution box -->
+            <rect x="698" y="76" width="372" height="148" rx="14" fill="#F0FDF4" stroke="#86EFAC" stroke-width="2"/>
+            <text x="884" y="107" text-anchor="middle" fill="#166534" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">Delete the fail cache</text>
+            <rect x="718" y="116" width="332" height="28" rx="6" fill="#DCFCE7" stroke="#86EFAC" stroke-width="1"/>
+            <text x="884" y="135" text-anchor="middle" fill="#166534" font-size="12" font-family="ui-monospace,monospace">rm -rf ~/.cache/thumbnails/fail/</text>
+            <text x="884" y="160" text-anchor="middle" fill="#16A34A" font-size="12" font-family="ui-sans-serif,sans-serif">then fix the root cause (Tracker3 + Nautilus restart)</text>
+            <text x="884" y="178" text-anchor="middle" fill="#166534" font-size="13" font-weight="600" font-family="ui-sans-serif,sans-serif">Nautilus retries all files fresh ✓</text>
+            <text x="884" y="214" text-anchor="middle" fill="#16A34A" font-size="12" font-family="ui-sans-serif,sans-serif">no reboot required · takes &lt;10 seconds</text>
+
+            <!-- Animated loop packet (red — trapped in loop) -->
+            <circle class="smil" r="7" fill="#DC2626">
+              <animate attributeName="cx" dur="3.2s" repeatCount="indefinite"
+                values="110;322;546;546;328;110" keyTimes="0;0.26;0.52;0.64;0.8;1"
+                calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0 0 1 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+              <animate attributeName="cy" dur="3.2s" repeatCount="indefinite"
+                values="145;145;145;100;52;100" keyTimes="0;0.26;0.52;0.64;0.8;1"
+                calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0 0 1 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+              <animate attributeName="opacity" dur="3.2s" repeatCount="indefinite" values="0;1;1;1;1;0" keyTimes="0;0.04;0.2;0.9;0.96;1"/>
+            </circle>
+          </svg>
+          <div class="legend">
+            <span><span class="dot derr"></span>permanent fail hit — no retry</span>
+            <span><span class="dot dwrn"></span>new fail entry written on MISS</span>
+            <span><span class="dot dok"></span>only escape: delete fail cache</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 6: Fix ── -->
+      <section id="fix">
+        <h2><span class="h2n">⑥</span> The Fix — Three Commands, Under 10 Seconds</h2>
+
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-num">Command 1</div>
+            <div class="step-title">tracker3 reset -s -r</div>
+            <p class="step-desc">Kills the miner daemon and wipes the corrupt SQLite database. Tracker rebuilds meta.db clean on next start.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">Command 2</div>
+            <div class="step-title">tracker3 daemon -s</div>
+            <p class="step-desc">Starts a fresh Tracker3 daemon with a new empty database. Thumbnail job queue is operational again.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">Command 3a</div>
+            <div class="step-title">rm -rf ~/.cache/thumbnails/fail/</div>
+            <p class="step-desc">Removes 7,907 permanent failure records. Nautilus will retry every file from scratch on next browse.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">Command 3b</div>
+            <div class="step-title">nautilus -q && restart</div>
+            <p class="step-desc">Kills the running process (with stale loaders) and spawns a fresh one that reads the current gdk-pixbuf loaders cache.</p>
+          </div>
+        </div>
+
+<pre><span class="cm"># 1. Reset Tracker3 — kills miner, wipes corrupt meta.db</span>
+<span class="cmd">tracker3</span> reset -s -r
+
+<span class="cm"># 2. Start fresh Tracker3 daemon</span>
+<span class="cmd">tracker3</span> daemon -s
+
+<span class="cm"># 3. Wipe all fail entries (permanent failure records)</span>
+rm -rf ~/.cache/thumbnails/fail/
+
+<span class="cm"># 4. Restart Nautilus — picks up current gdk-pixbuf loaders</span>
+<span class="cmd">nautilus</span> -q
+<span class="cmd">nohup nautilus</span> --gapplication-service &amp;&gt;/dev/null &amp;</pre>
+
+        <!-- SVG fix sequence -->
+        <div class="svg-box">
+          <div class="svg-cap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Animation — fix sequence with progress
+          </div>
+          <svg viewBox="0 0 1100 200" role="img" aria-label="Fix sequence animation">
+            <!-- Step boxes -->
+            <rect x="20"  y="50" width="220" height="96" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+            <text x="130" y="82"  text-anchor="middle" fill="#374151" font-size="14" font-weight="600" font-family="ui-sans-serif,sans-serif">tracker3 reset</text>
+            <text x="130" y="101" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">kills tracker-miner-fs-3</text>
+            <text x="130" y="118" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">wipes corrupt meta.db</text>
+            <!-- checkmark badge (top-right, outside box) -->
+            <circle class="smil" cx="228" cy="58" r="12" fill="#16A34A" opacity="0">
+              <animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.16;0.22;1"/>
+            </circle>
+            <text class="smil" x="228" y="63" text-anchor="middle" fill="white" font-size="13" font-weight="700" opacity="0">✓
+              <animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.16;0.22;1"/>
+            </text>
+
+            <line x1="241" y1="98" x2="281" y2="98" stroke="#16A34A" stroke-width="1.5" marker-end="url(#a1)"/>
+
+            <rect x="283" y="50" width="220" height="96" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+            <text x="393" y="82"  text-anchor="middle" fill="#374151" font-size="14" font-weight="600" font-family="ui-sans-serif,sans-serif">tracker3 daemon -s</text>
+            <text x="393" y="101" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">fresh empty database</text>
+            <text x="393" y="118" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">job queue restored</text>
+            <circle class="smil" cx="491" cy="58" r="12" fill="#16A34A" opacity="0">
+              <animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="0;0;0;1;1" keyTimes="0;0.26;0.36;0.44;1"/>
+            </circle>
+            <text class="smil" x="491" y="63" text-anchor="middle" fill="white" font-size="13" font-weight="700" opacity="0">✓
+              <animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="0;0;0;1;1" keyTimes="0;0.26;0.36;0.44;1"/>
+            </text>
+
+            <line x1="504" y1="98" x2="544" y2="98" stroke="#16A34A" stroke-width="1.5" marker-end="url(#a1)"/>
+
+            <rect x="546" y="50" width="220" height="96" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+            <text x="656" y="82"  text-anchor="middle" fill="#374151" font-size="14" font-weight="600" font-family="ui-sans-serif,sans-serif">rm fail cache</text>
+            <text x="656" y="101" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">7,907 entries wiped</text>
+            <text x="656" y="118" text-anchor="middle" fill="#6B7280" font-size="12" font-family="ui-sans-serif,sans-serif">retry blocks removed</text>
+            <circle class="smil" cx="754" cy="58" r="12" fill="#16A34A" opacity="0">
+              <animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="0;0;0;0;1;1" keyTimes="0;0.44;0.55;0.64;0.72;1"/>
+            </circle>
+            <text class="smil" x="754" y="63" text-anchor="middle" fill="white" font-size="13" font-weight="700" opacity="0">✓
+              <animate attributeName="opacity" dur="5s" repeatCount="indefinite" values="0;0;0;0;1;1" keyTimes="0;0.44;0.55;0.64;0.72;1"/>
+            </text>
+
+            <line x1="767" y1="98" x2="807" y2="98" stroke="#16A34A" stroke-width="1.5" marker-end="url(#a1)"/>
+
+            <rect x="809" y="44" width="271" height="102" rx="12" fill="#F0FDF4" stroke="#86EFAC" stroke-width="2"/>
+            <text x="944" y="76"  text-anchor="middle" fill="#166534" font-size="24">🖼</text>
+            <text x="944" y="98"  text-anchor="middle" fill="#166534" font-size="15" font-weight="700" font-family="ui-sans-serif,sans-serif">Thumbnails working</text>
+            <text x="944" y="116" text-anchor="middle" fill="#16A34A" font-size="12" font-family="ui-sans-serif,sans-serif">fresh loaders · Tracker3 healthy ✓</text>
+            <text x="944" y="134" text-anchor="middle" fill="#16A34A" font-size="12" font-family="ui-sans-serif,sans-serif">all file types generate correctly</text>
+
+            <!-- Progress bar -->
+            <rect x="20" y="164" width="1060" height="10" rx="5" fill="#E5E7EB"/>
+            <rect x="20" y="164" width="0" height="10" rx="5" fill="#16A34A" class="smil">
+              <animate attributeName="width" dur="5s" repeatCount="indefinite"
+                values="0;220;503;766;1060" keyTimes="0;0.22;0.45;0.68;0.9"
+                calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            </rect>
+            <!-- Step labels below progress bar -->
+            <text x="130" y="186" text-anchor="middle" fill="#6B7280" font-size="11" font-family="ui-sans-serif,sans-serif">reset</text>
+            <text x="393" y="186" text-anchor="middle" fill="#6B7280" font-size="11" font-family="ui-sans-serif,sans-serif">daemon start</text>
+            <text x="656" y="186" text-anchor="middle" fill="#6B7280" font-size="11" font-family="ui-sans-serif,sans-serif">cache clear</text>
+            <text x="944" y="186" text-anchor="middle" fill="#16A34A" font-size="11" font-weight="600" font-family="ui-sans-serif,sans-serif">done ✓</text>
+          </svg>
+          <div class="legend">
+            <span><span class="dot dok"></span>step complete</span>
+            <span><span class="dot dbl"></span>pipeline restored</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 6b: Root Cause 3 — bwrap ── -->
+      <section id="bwrap">
+        <h2><span class="h2n">⑥</span> Root Cause 3 — The One That Kept It Broken</h2>
+
+        <p>Even after fixing Tracker3 and restarting Nautilus, thumbnails kept failing. The thumbnailer binaries worked perfectly from the terminal. Something was breaking them exclusively when called by the GNOME thumbnail factory. Here is exactly what and why.</p>
+
+        <h3>What changed in libgnome-desktop 44</h3>
+        <p>Starting with <strong>libgnome-desktop 44</strong>, the <code>GnomeDesktopThumbnailFactory</code> — the component that orchestrates thumbnail generation across all of GNOME — was updated to run every thumbnailer inside a <strong>bubblewrap (<code>bwrap</code>) sandbox</strong>. This was a deliberate security improvement: if a malicious or malformed file exploits a bug in a thumbnailer, the damage is contained inside an isolated namespace.</p>
+        <p>The factory now does this internally on every thumbnail request:</p>
+
+<pre><span class="cm"># What gnome-desktop does under the hood — every time:</span>
+bwrap --ro-bind /usr /usr --proc /proc --dev /dev \
+  --tmpfs /tmp -- gdk-pixbuf-thumbnailer -s 256 %u %o</pre>
+
+        <h3>Why it fails on Ubuntu 24.04</h3>
+        <p><code>bwrap</code> creates an isolated sandbox using <strong>Linux user namespaces</strong>. Creating a user namespace requires either a setuid binary or the kernel allowing unprivileged processes to create their own namespaces. Ubuntu 24.04 (kernel 6.x) locks this down via <strong>AppArmor</strong>:</p>
+
+        <div class="callout error">
+          <strong>The actual error — buried in the factory, never surfaced to the user:</strong><br><br>
+          <code>bwrap: setting up uid map: Permission denied</code><br><br>
+          Exit code 1. The factory sees a failed subprocess, writes a fail entry to <code>~/.cache/thumbnails/fail/</code>, and moves on silently. No desktop notification. No error dialog. Nothing.
+        </div>
+
+        <p>This is why clearing the fail cache and fixing Tracker3 wasn't enough — the underlying <code>bwrap</code> call was failing before the thumbnailer even started. Every single thumbnail attempt, for every file type, on every browse, was silently blocked at the sandbox layer.</p>
+
+        <h3>The fix — one sysctl</h3>
+        <p>Allow unprivileged processes to create user namespaces. This re-enables the <code>bwrap</code> sandbox that gnome-desktop needs:</p>
+
+<pre><span class="cm"># Apply immediately (no reboot needed)</span>
+<span class="cmd">sudo</span> sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+<span class="cm"># Make it survive reboots</span>
+echo <span class="str">'kernel.apparmor_restrict_unprivileged_userns=0'</span> | \
+  <span class="cmd">sudo</span> tee /etc/sysctl.d/60-userns.conf</pre>
+
+        <p>Then clear the fail cache (which accumulated all the bwrap failures) and let Nautilus regenerate everything fresh:</p>
+
+<pre>rm -rf ~/.cache/thumbnails/fail/
+<span class="cmd">nautilus</span> -q &amp;&amp; <span class="cmd">nohup nautilus</span> --gapplication-service &amp;&gt;/dev/null &amp;</pre>
+
+        <div class="callout info">
+          <strong>Is this a security risk?</strong> Slightly. Unprivileged user namespaces are a prerequisite for some container escapes and privilege escalation techniques. Ubuntu 24.04 restricts them by default for this reason. However, many legitimate system tools — including <code>bwrap</code>, <code>flatpak</code>, <code>podman</code>, and Chrome's sandbox — require them. If you run a desktop machine and not a hardened server, this is the accepted trade-off. For servers, consider option B instead: <code>sudo chmod u+s /usr/bin/bwrap</code> to give only <code>bwrap</code> the privilege it needs.
+        </div>
+
+        <h3>Why this was so hard to spot</h3>
+        <p>Three reasons this went undiagnosed for 8 days:</p>
+        <ol style="padding-left:20px;color:var(--muted);line-height:2;">
+          <li>The thumbnailer binaries work perfectly from the terminal — the failure only happens inside the factory's sandboxed subprocess call.</li>
+          <li>The factory writes a fail entry and continues — there is no log line, no notification, and no visible error at any level the user can see.</li>
+          <li>The first two root causes (stale loader, corrupt Tracker3) masked this one — fixing them appeared to help briefly, then thumbnails would fail again because the sandbox was still blocked.</li>
+        </ol>
+      </section>
+
+      <!-- ── Section 7: Prevention ── -->
+      <section id="prevention">
+        <h2><span class="h2n">⑦</span> Prevention</h2>
+
+        <div class="card">
+          <h3>Keep Tracker3 healthy</h3>
+          <p>If Nautilus feels sluggish or thumbnails stop working, check Tracker first. A corrupt database silently blocks all thumbnail generation with no visible error.</p>
+          <pre><span class="cmd">tracker3</span> status
+<span class="cm"># On any error → reset (takes 3 seconds, rebuilds cleanly)</span>
+<span class="cmd">tracker3</span> reset -s -r</pre>
+        </div>
+
+        <div class="card">
+          <h3>Restart Nautilus after gdk-pixbuf upgrades</h3>
+          <p>Any upgrade that touches a package triggering <code>update-gdk-pixbuf-loaders</code> invalidates the in-memory loader map. Nautilus never reloads it — only a restart picks up the new loaders.</p>
+          <pre><span class="cmd">grep</span> -i <span class="str">'gdk-pixbuf\|thumbnailer'</span> /var/log/dpkg.log | tail -20
+<span class="cm"># If you see a recent hit → restart Nautilus</span>
+<span class="cmd">nautilus</span> -q &amp;&amp; <span class="cmd">nohup nautilus</span> --gapplication-service &amp;&gt;/dev/null &amp;</pre>
+        </div>
+
+        <div class="card">
+          <h3>Choose the right thumbnail scope</h3>
+          <p>The <code>show-image-thumbnails</code> setting controls which files Nautilus will attempt to thumbnail. Mismatches between this setting and which drives are mounted are the primary cause of fail cache accumulation.</p>
+          <pre><span class="cm"># local-only (default) — no fail cache pollution from unmounted drives</span>
+<span class="cmd">gsettings</span> set org.gnome.nautilus.preferences show-image-thumbnails <span class="str">'local-only'</span>
+
+<span class="cm"># always — includes mounted external drives</span>
+<span class="cmd">gsettings</span> set org.gnome.nautilus.preferences show-image-thumbnails <span class="str">'always'</span></pre>
+        </div>
+
+        <div class="callout info">
+          <strong>Architecture note:</strong> The freedesktop.org thumbnail spec defines a shared repository (<code>.sh_thumbnails/</code>) on each removable volume so thumbnails travel with the drive and fail records don't pollute the local cache. GNOME reads from <code>.sh_thumbnails/</code> but doesn't write to it automatically. Until that's implemented, <code>local-only</code> is the cleanest setting if you want zero fail-cache noise from unmounted drives.
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer style="border-top:1px solid var(--border);padding-top:28px;font-size:13px;color:var(--muted);">
+        <p>Diagnosed and fixed on <strong style="color:var(--text)">Ubuntu 24.04 LTS</strong> · GNOME 46 · Nautilus 46 · Tracker 3.x · kernel 6.17.0-23-generic</p>
+        <p style="margin-top:8px;margin-bottom:0">The three-command fix applies to any GNOME 44+ system showing fail-cache accumulation, Tracker3 database errors in <code>journalctl --user</code>, or thumbnails that stopped working after a routine upgrade.</p>
+      </footer>
+
+    </main>
+  </div>
+</div>
+</body>
+</html>
